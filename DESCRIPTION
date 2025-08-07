@@ -1,0 +1,29 @@
+Package: edid
+Title: Efficient Difference-in-Differences Estimator
+Version: 0.1
+Authors@R: 
+    person("David", "Loeb", email = "loebd@upenn.edu", role = c("aut", "cre"),
+    comment = c(ORCID = "0009-0003-6564-3867"))
+Description: Implementation of the efficient difference-in-differences estimator 
+    as described in "Efficient Difference-in-Differences and Event Study 
+    Estimators" by Chen, Sant'Anna, and Xie (2025). The implementation does not 
+    allow for covariates and restricts the number of pre-periods used for 
+    estimation to be equal across treatment groups. Event study and calendar 
+    time aggregation are included.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Imports: 
+    BMisc,
+    dplyr,
+    purrr,
+    stringr,
+    tibble,
+    tidyr,
+    withr
+Depends: 
+    R (>= 3.5)
+LazyData: true
+URL: https://github.com/david-loeb/edid
+BugReports: https://github.com/david-loeb/edid/issues
