@@ -14,7 +14,7 @@ options(digits = 3)
 
 # edid
 
-The edid package implements the efficient difference-in-differences estimator developed by [Chen, Sant'Anna, and Xie (2025)](https://arxiv.org/abs/2506.17729) in "Efficient Difference-in-Differences and Event Study Estimators." I wrote the code for a personal research project, as I could not find a publicly available implementation, so I thought I'd share it in case others would like to use the estimator as well. The functionality is quite limited; I describe the limitations below. I imagine the paper authors will release a much more robust implementation at some point. However, there does not currently appear to be another publicly available implementation, so I hope this is better than nothing!
+The edid package implements the efficient difference-in-differences and event study estimators developed by [Chen, Sant'Anna, and Xie (2025)](https://arxiv.org/abs/2506.17729). I wrote the code for a personal research project, as I could not find a publicly available implementation, so I thought I'd share it in case others would like to use the estimator as well. The functionality is quite limited; I describe the limitations below. I imagine the paper authors will release a much more robust implementation at some point. However, there does not currently appear to be anything else publicly available, so I hope this is better than nothing!
 
 ## Installation
 
