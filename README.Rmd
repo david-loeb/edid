@@ -14,7 +14,7 @@ options(digits = 3)
 
 # edid
 
-The edid package implements the efficient difference-in-differences and event study estimators developed by [Chen, Sant'Anna, and Xie (2025)](https://arxiv.org/abs/2506.17729). I wrote the code for a personal research project, as I could not find a publicly available implementation, so I thought I'd share it in case others would like to use the estimator as well. The functionality is quite limited; I describe the limitations below. I imagine the paper authors will release a much more robust implementation at some point. However, there does not currently appear to be anything else publicly available, so I hope this is better than nothing!
+The edid package implements the efficient difference-in-differences and event study estimators developed by [Chen, Sant'Anna, and Xie (2025)](https://arxiv.org/abs/2506.17729). I wrote the code for a personal research project, as I could not find a publicly available implementation, so I thought I'd share it. The functionality is quite limited; I describe the limitations below. I imagine a much more robust implementation will be released at some point. However, there does not currently appear to be anything else publicly available, so I hope this is better than nothing!
 
 ## Installation
 
@@ -47,6 +47,41 @@ edid_results <- edid(
 
 The result will be a data frame with the efficient $ATT(g,t)$, event study, and calendar time aggregation results. You can also request a more complete set of model components, including the individual $ATT(g,t)$ and weights used to compute the efficient $ATT(g,t)$ by setting `get_full_mod = TRUE` in the `edid()` function.
 
+## Plotting results
+
+The EDiD results can be plotted with the `plot_edid()` function. It uses {ggplot2} (and {patchwork} if plotting individual $ATT(g,t)$ ) under the hood. The following code demonstrates how to use `plot_edid()` and an example of how the plot looks.
+
+```{r}
+# Event study plot
+plot_edid(edid_results, mod_type = "es")
+```
+
+The plots can be customized in a number of ways, including the confidence intervals to plot, color scheme, error bar width, and text sizes. The plot below shows the result of requesting a plot for the full set of $ATT(g,t)$ results and all confidence intervals with reduced text size. (I increase the confidence interval size in the example to provide a more realistic plotting demonstration, as the example data set features extremely narrow CIs.)
+
+```{r}
+# Increase the size of CIs
+edid_res_largerCI <- edid_results |> 
+  dplyr::mutate(
+    ci_up_95_boot = ci_up_95_boot + se_boot * 100,
+    ci_up_90_boot = ci_up_90_boot + se_boot * 80,
+    ci_up_95_analytic = ci_up_95_analytic + se_analytic * 50,
+    ci_up_90_analytic = ci_up_90_analytic + se_analytic * 30,
+    ci_low_95_boot = ci_low_95_boot - se_boot * 100,
+    ci_low_90_boot = ci_low_90_boot - se_boot * 80,
+    ci_low_95_analytic = ci_low_95_analytic - se_analytic * 50,
+    ci_low_90_analytic = ci_low_90_analytic - se_analytic * 30
+  )
+
+plot_edid(
+  edid_res_largerCI, 
+  mod_type = "attgt", 
+  ci = "all", 
+  text_size_base = 10
+)
+```
+
+See the `plot_edid()` documentation for more details on the various plotting options.
+
 ## Full set of package functions
 
 A list of all the package functions with a brief description of each is below. See the package documentation for a detailed explanation of each function. The functions are run in the order listed to execute the modeling process.
@@ -58,6 +93,7 @@ A list of all the package functions with a brief description of each is below. S
 - `get_edid_results_attgt()`: Extracts the efficient $ATT(g,t)$ and related results into a data frame.
 - `get_edid_results_agg()`: Aggregates the results into event study and/or calendar time effects and returns the results in a data frame.
 - `edid()`: Runs all of the above functions and returns any or all of the results of the three previous functions.
+- `plot_edid()`: Plots the results with {ggplot2}.
 
 ## Limitations
 
@@ -65,4 +101,4 @@ edid's biggest limitation is that it does not handle covariates. It also require
 
 ## Acknowledgements
 
-First I would like to thank the authors Drs. Xiaohong Chen, Pedro H. C. Sant'Anna, and Haitian Xie for their fantastic work developing this estimator. It has already proved to be quite useful in my own work. I highly recommend reading [their paper](https://arxiv.org/abs/2506.17729). I also want to thank Dr. Brantly Callaway (and Pedro Sant'Anna again) for the multiplier bootstrap procedure developed in their renowned [2021 paper](https://www.sciencedirect.com/science/article/abs/pii/S0304407620303948) "Difference-in-Differences With Multiple Time Periods." I used not only the procedure but much of the code directly from their implementation in the [{did} package](https://bcallaway11.github.io/did/).
+First I would like to thank the authors Drs. Xiaohong Chen, Pedro H. C. Sant'Anna, and Haitian Xie for their fantastic work developing this estimator. It has already proved to be useful in my own work. I highly recommend reading [their paper](https://arxiv.org/abs/2506.17729). I also want to thank Dr. Brantly Callaway (and Dr. Pedro Sant'Anna again) for the multiplier bootstrap procedure developed in their renowned [2021 paper](https://www.sciencedirect.com/science/article/abs/pii/S0304407620303948) "Difference-in-Differences With Multiple Time Periods." I used not only the procedure but much of the code directly from their implementation in the [{did} package](https://bcallaway11.github.io/did/).
