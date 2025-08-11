@@ -70,8 +70,7 @@ confidence intervals to plot, color scheme, error bar width, and text
 sizes. The plot below shows the result of requesting a plot for the full
 set of $ATT(g,t)$ results and all confidence intervals with reduced text
 size. (I increase the confidence interval size in the example to provide
-a more realistic plotting demonstration, as the example data set
-features extremely narrow CIs.)
+a more demonstrative plot.)
 
 ``` r
 # Increase the size of CIs
