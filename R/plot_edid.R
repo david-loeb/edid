@@ -52,6 +52,8 @@
 #'   `NULL` defaults to two sizes smaller than `text_size_base`.
 #' @param text_size_legend_title An integer specifying the ggplot2 legend title
 #'   size. `NULL` defaults to the same size as `text_size_base`.
+#' @param text_font A string specifying the name of the font family to use.
+#'   `NULL` defaults to `sans`, the ggplot2 default.
 #' @param gt_g This argument only applies to `mod_type = "attgt"`. A numeric
 #'   vector specifying a subset of treatment groups to plot. The default `NULL`
 #'   will plot all treatment groups.
@@ -150,6 +152,7 @@ plot_edid <- function(
     text_size_title = NULL,
     text_size_legend = NULL,
     text_size_legend_title = NULL,
+    text_font = NULL,
     gt_g = NULL,
     gt_ncol = NULL,
     gt_y_axes_same = TRUE
@@ -199,8 +202,8 @@ plot_edid <- function(
     plts <- purrr::map(gt_g, \(g) {
       plot_edid_one(
         dat, 'attgt', ci, colors, error_bar_width, x_lim_padding,
-        text_size_base, text_size_title, text_size_legend, text_size_legend_title,
-        g, ylims, xlims
+        text_size_base, text_size_title, text_size_legend,
+        text_size_legend_title, text_font, g, ylims, xlims
       )
     })
     purrr::reduce(plts, `+`) + patchwork::plot_layout(
@@ -209,7 +212,8 @@ plot_edid <- function(
   } else {  # If event study or cal, just run underlying individual plot func
     plot_edid_one(
       res_dat, mod_type, ci, colors, error_bar_width, x_lim_padding,
-      text_size_base, text_size_title, text_size_legend, text_size_legend_title
+      text_size_base, text_size_title, text_size_legend,
+      text_size_legend_title, text_font
     )
   }
 }
@@ -264,6 +268,8 @@ plot_edid <- function(
 #'   `NULL` defaults to two sizes smaller than `text_size_base`.
 #' @param text_size_legend_title An integer specifying the ggplot2 legend title
 #'   size. `NULL` defaults to the same size as `text_size_base`.
+#' @param text_font A string specifying the name of the font family to use.
+#'   `NULL` defaults to `sans`, the ggplot2 default.
 #' @param g_cur Integer identifying the treament group identifier for an
 #'   ATT(g,t) plot.
 #' @param ylims Numeric vector of length 2 specifying the y-axis limits. Used
@@ -288,6 +294,7 @@ plot_edid_one <- function(
     text_size_title = NULL,
     text_size_legend = NULL,
     text_size_legend_title = NULL,
+    text_font = NULL,
     g_cur = NULL,
     ylims = NULL,
     xlims = NULL
@@ -296,6 +303,7 @@ plot_edid_one <- function(
   if (is.null(text_size_title)) text_size_title <- text_size_base
   if (is.null(text_size_legend)) text_size_legend <- text_size_base - 2
   if (is.null(text_size_legend_title)) text_size_legend_title <- text_size_base
+  if (is.null(text_font)) text_font <- 'sans'
 
   dat <- dplyr::filter(res_dat, type == mod_type)
   if (mod_type == 'es') {
@@ -487,6 +495,7 @@ plot_edid_one <- function(
     ggplot2::theme_minimal(base_size = text_size_base) +
     ggplot2::theme(
       panel.grid = ggplot2::element_blank(),
+      text = ggplot2::element_text(family = text_font),
       plot.title = ggplot2::element_text(size = text_size_title, hjust = .5),
       legend.text = ggplot2::element_text(size = text_size_legend),
       legend.title = ggplot2::element_text(size = text_size_legend_title)

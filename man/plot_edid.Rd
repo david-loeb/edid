@@ -15,6 +15,7 @@ plot_edid(
   text_size_title = NULL,
   text_size_legend = NULL,
   text_size_legend_title = NULL,
+  text_font = NULL,
   gt_g = NULL,
   gt_ncol = NULL,
   gt_y_axes_same = TRUE
@@ -76,6 +77,9 @@ defaults to the same size as \code{text_size_base}.}
 
 \item{text_size_legend_title}{An integer specifying the ggplot2 legend title
 size. \code{NULL} defaults to the same size as \code{text_size_base}.}
+
+\item{text_font}{A string specifying the name of the font family to use.
+\code{NULL} defaults to \code{sans}, the ggplot2 default.}
 
 \item{gt_g}{This argument only applies to \code{mod_type = "attgt"}. A numeric
 vector specifying a subset of treatment groups to plot. The default \code{NULL}
