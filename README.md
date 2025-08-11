@@ -67,7 +67,7 @@ plot_edid(edid_results, mod_type = "es")
 <img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
 
 The plots can be customized in a number of ways, including the
-confidence intervals to plot, color scheme, font, text sizes, error bar
+confidence intervals to plot, color scheme, text sizes, font, error bar
 width and more. You can also save the plot result and customize it
 further with your own {ggplot2} pipeline. The plot below shows the
 result of requesting a plot for the full set of $ATT(g,t)$ results and
