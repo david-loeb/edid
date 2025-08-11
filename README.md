@@ -80,12 +80,12 @@ plot.)
 edid_res_largerCI <- edid_results |> 
   dplyr::mutate(
     ci_up_95_boot = ci_up_95_boot + se_boot * 100,
-    ci_up_90_boot = ci_up_90_boot + se_boot * 80,
-    ci_up_95_analytic = ci_up_95_analytic + se_analytic * 50,
+    ci_up_90_boot = ci_up_90_boot + se_boot * 50,
+    ci_up_95_analytic = ci_up_95_analytic + se_analytic * 80,
     ci_up_90_analytic = ci_up_90_analytic + se_analytic * 30,
     ci_low_95_boot = ci_low_95_boot - se_boot * 100,
-    ci_low_90_boot = ci_low_90_boot - se_boot * 80,
-    ci_low_95_analytic = ci_low_95_analytic - se_analytic * 50,
+    ci_low_90_boot = ci_low_90_boot - se_boot * 50,
+    ci_low_95_analytic = ci_low_95_analytic - se_analytic * 80,
     ci_low_90_analytic = ci_low_90_analytic - se_analytic * 30
   )
 
