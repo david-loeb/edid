@@ -51,7 +51,7 @@ more complete set of model components, including the individual
 $ATT(g,t)$ and weights used to compute the efficient $ATT(g,t)$ by
 setting `get_full_mod = TRUE` in the `edid()` function.
 
-## Plotting results
+## Plot results
 
 The EDiD results can be plotted with the `plot_edid()` function. It uses
 {ggplot2} (and {patchwork} if plotting individual $ATT(g,t)$ ) under the
