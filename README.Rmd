@@ -49,7 +49,7 @@ The result will be a data frame with the efficient $ATT(g,t)$, event study, and 
 
 ## Plot results
 
-The EDiD results can be plotted with the `plot_edid()` function. It uses {ggplot2} (and {patchwork} if plotting individual $ATT(g,t)$ ) under the hood. The following code demonstrates how to use `plot_edid()` and an example of how the plot looks.
+The EDiD results can be plotted with the `plot_edid()` function. It uses {ggplot2} (and {patchwork} if plotting individual $ATT(g,t)$ ) under the hood. The following code demonstrates how to use `plot_edid()` and an example of how the plot looks. (Wouldn't we all love to have results like this?)
 
 ```{r}
 # Event study plot

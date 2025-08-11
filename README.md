@@ -56,7 +56,8 @@ setting `get_full_mod = TRUE` in the `edid()` function.
 The EDiD results can be plotted with the `plot_edid()` function. It uses
 {ggplot2} (and {patchwork} if plotting individual $ATT(g,t)$ ) under the
 hood. The following code demonstrates how to use `plot_edid()` and an
-example of how the plot looks.
+example of how the plot looks. (Wouldn’t we all love to have results
+like this?)
 
 ``` r
 # Event study plot
