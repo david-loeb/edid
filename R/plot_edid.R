@@ -1,0 +1,556 @@
+#' Plot EDiD results
+#'
+#' This function uses ggplot2 to plot the EDiD results. If you wish to plot
+#' multiple individual treatment group results, the function uses the patchwork
+#' package to fashion these individual plots into a grid. You can choose to
+#' plot any or all of the confidence intervals. Any anticipation years will be
+#' plotted in black and post-treatment years will be plotted in color.
+#'
+#' @param res_dat A results data frame returned by [edid()],
+#'   [get_edid_results_attgt()], or [get_edid_results_agg()]
+#' @param mod_type Character string specifying the type of model you want to
+#'   plot. Options are `"attgt"`, `"es"`, and `"cal"`. If your results data
+#'   frame contains only one model type, you can leave the default `NULL`
+#'   option and the function will automatically plot that model type.
+#' @param ci A character string specifying the confidence intervals you want to
+#'   display. The options are: `"95_boot"` (default), `"90_boot"`,
+#'   `"95_analytic"`, `"90_analytic"`, `"boot"`, `"analytic"`, `"95"`, `"90"`,
+#'   and `"all"`. `"boot"` and `"analytic"` will plot both the 95% and 90%
+#'   bootstrapped or analytic confidence bands respectively. `"95"` and `"90"`
+#'   will plot both the bootstrapped and analytic confidence bands at the 95%
+#'   or 90% confidence levels respectively. `"all"` will plot all four
+#'   confidence bands.
+#' @param colors A character string or vector specifying the color palette.
+#'   There are three special string characters that will specify specific
+#'   palettes from the colorblind-friendly `viridis` color palettes: `"turbo"`
+#'   (default), `"viridis"`, and `"viridis_.75"` which is the viridis palette
+#'   with a truncated range that I find more visually appealing. You can also
+#'   specify your own custom palette by supplying a character vector the same
+#'   length as the number of requested confidence intervals. The order matters:
+#'   colors are ordered from largest confidence intervals to smallest. That
+#'   means the last item of the vector corresponds to the smallest confidence
+#'   interval, which will be in the foreground and therefore the dominant color
+#'   of the plot. The ATT points will also be this color.
+#' @param error_bar_width A number specifying the width of the horizontal end
+#'   points of the error bars. If error bars are too wide, the first and/or
+#'   last time period's bars may extend beyond the x-axis limits and get
+#'   clipped, so you may need to adjust this setting accordingly.
+#' @param x_lim_padding A number specifying the amount by which to extend the
+#'   x-axis limits in order to provide "padding" for the error bars to prevent
+#'   clipping. If your error bars are getting clipped (i.e., the first or last
+#'   time period's horizontal bar ends do not appear), you will need to
+#'   increase this value. You can also decrease the value if you have extra
+#'   unnecessary space at the ends of the x-axis.
+#' @param text_size_base An integer specifying the ggplot2 base text size.
+#'   `NULL` defaults to `11`, the ggplot2 default. If the value is supplied
+#'   and the values to the other `text_size_*` arguments are left `NULL`, the
+#'   text sizes of those elements will be updated to match the supplied base
+#'   text size.
+#' @param text_size_title An integer specifying the plot title size. `NULL`
+#'   defaults to the same size as `text_size_base`.
+#' @param text_size_legend An integer specifying the ggplot2 legend text size.
+#'   `NULL` defaults to two sizes smaller than `text_size_base`.
+#' @param text_size_legend_title An integer specifying the ggplot2 legend title
+#'   size. `NULL` defaults to the same size as `text_size_base`.
+#' @param gt_g This argument only applies to `mod_type = "attgt"`. A numeric
+#'   vector specifying a subset of treatment groups to plot. The default `NULL`
+#'   will plot all treatment groups.
+#' @param gt_ncol This argument only applies to `mod_type = "attgt"`. An
+#'   integer specifying the number of columns in the plot grid, i.e. the final
+#'   output that is a grid of the individual ATT(g,t) plots. If the default
+#'   `NULL` is supplied, the function will auto-assign a number of cols as
+#'   follows: `1` if there are 1 or 2 treatment groups; `2` if there are 3 or 4
+#'   treatment groups; and `3` otherwise.
+#' @param gt_y_axes_same This argument only applies to `mod_type = "attgt"`. A
+#'   boolean specifying whether y-axes should be consistent across all
+#'   individual ATT(g,t) plots. The default is `TRUE`.
+#'
+#' @returns A ggplot2 plot. If `mod_type = "attgt"`, it returns a grid of
+#'   individual ATT(g,t) ggplots created by the patchwork package.
+#'
+#' @importFrom patchwork plot_layout
+#' @export
+#'
+#' @examples
+#' edid_res <- edid(
+#'   edid_ex_data,
+#'   y_var = "outcome",
+#'   id_var = "id",
+#'   treat_time_var = "treat_adopt_time",
+#'   time_var = "time",
+#'   num_t_pre = 3
+#' )
+#'
+#' # Plot individual ATT(g,t)'s with the 95% bootstrapped CI
+#' plot_edid(edid_res, mod_type = "attgt")
+#'
+#' # Plot a subset of individual ATT(g,t)'s with all CIs
+#' plot_edid(
+#'   edid_res,
+#'   mod_type = "attgt",
+#'   ci = "all",
+#'   gt_g = c(5, 6, 7)
+#' )
+#'
+#' # Plot event study with 95% and 90% bootstrapped CIs
+#' # and the viridis color scheme
+#' plot_edid(
+#'   edid_res,
+#'   mod_type = "es",
+#'   ci = "boot",
+#'   colors = "viridis"
+#' )
+#'
+#' # Plot calendar time with bootstrapped and analytic 95% CIs,
+#' # a custom color palette, and smaller plot text
+#' plot_edid(
+#'   edid_res,
+#'   mod_type = "cal",
+#'   ci = "95",
+#'   colors = c("deeppink2", "deepskyblue2"),
+#'   text_size_base = 10
+#' )
+#'
+#' # Plot an event study with an anticipation period
+#' edid_res_anticip <- edid(
+#'   edid_ex_data,
+#'   y_var = "outcome",
+#'   id_var = "id",
+#'   treat_time_var = "treat_adopt_time",
+#'   time_var = "time",
+#'   num_t_pre = 2,
+#'   anticip = 1
+#' )
+#'
+#' plot_edid(edid_res_anticip, mod_type = "es")
+#'
+#' # Plot an event study with a results data frame
+#' # containing only event study results
+#' edid_res_es <- edid(
+#'   edid_ex_data,
+#'   y_var = "outcome",
+#'   id_var = "id",
+#'   treat_time_var = "treat_adopt_time",
+#'   time_var = "time",
+#'   num_t_pre = 2,
+#'   anticip = 1,
+#'   get_attgt = FALSE,
+#'   get_cal = FALSE
+#' )
+#'
+#' plot_edid(edid_res_es)
+plot_edid <- function(
+    res_dat,
+    mod_type = NULL,
+    ci = '95_boot',
+    colors = 'turbo',
+    error_bar_width = 0.3,
+    x_lim_padding = 0.2,
+    text_size_base = NULL,
+    text_size_title = NULL,
+    text_size_legend = NULL,
+    text_size_legend_title = NULL,
+    gt_g = NULL,
+    gt_ncol = NULL,
+    gt_y_axes_same = TRUE
+) {
+  if (is.null(mod_type) & length(unique(res_dat$type)) > 1) {
+    stop('must specify the type of model you want to plot')
+  } else if (is.null(mod_type)) {
+    mod_type <- unique(res_dat$type)
+  }
+  if (mod_type == 'attgt') {  # Prep & run loop that plots all ATTgt
+    if (is.null(gt_g)) gt_g <- unique(res_dat$g[!is.na(res_dat$g)])
+    dat <- dplyr::filter(res_dat, type == 'attgt', g %in% gt_g)
+
+    if (is.null(gt_ncol)) {
+      if (length(gt_g) <= 2) {
+        gt_ncol <- 1
+      } else if (length(gt_g) <= 4) {
+        gt_ncol <- 2
+      } else {
+        gt_ncol <- 3
+      }
+    }
+
+    if (gt_y_axes_same) {  # params for consistent axes
+      if (ci == 'all' | ci == '95') {
+        ymax <- max(c(dat$ci_up_95_boot, dat$ci_up_95_analytic))
+        ymin <- min(c(dat$ci_low_95_boot, dat$ci_low_95_analytic))
+      } else if (ci == '90') {
+        ymax <- max(c(dat$ci_up_90_boot, dat$ci_up_90_analytic))
+        ymin <- min(c(dat$ci_low_90_boot, dat$ci_low_90_analytic))
+      } else if (ci == 'boot') {
+        ymax <- max(dat$ci_up_95_boot)
+        ymin <- min(dat$ci_low_95_boot)
+      } else if (ci == 'analytic') {
+        ymax <- max(dat$ci_up_95_analytic)
+        ymin <- min(dat$ci_low_95_analytic)
+      } else {
+        ymax <- max(dat[[stringr::str_c('ci_up_', ci)]])
+        ymin <- min(dat[[stringr::str_c('ci_low_', ci)]])
+      }
+      ylims <- c(ymin, ymax)
+    } else {
+      ylims <- NULL
+    }
+    xlims <- c(min(dat$t) - x_lim_padding, max(dat$t) + x_lim_padding)
+
+    plts <- purrr::map(gt_g, \(g) {
+      plot_edid_one(
+        dat, 'attgt', ci, colors, error_bar_width, x_lim_padding,
+        text_size_base, text_size_title, text_size_legend, text_size_legend_title,
+        g, ylims, xlims
+      )
+    })
+    purrr::reduce(plts, `+`) + patchwork::plot_layout(
+      ncol = gt_ncol, guides = 'collect', axes = 'collect', axis_titles = 'collect'
+    )
+  } else {  # If event study or cal, just run underlying individual plot func
+    plot_edid_one(
+      res_dat, mod_type, ci, colors, error_bar_width, x_lim_padding,
+      text_size_base, text_size_title, text_size_legend, text_size_legend_title
+    )
+  }
+}
+
+#' Create an EDiD results plot
+#'
+#' The workhorse function that creates the ggplot2 plots for `plot_edid()`.
+#'
+#' @param res_dat A results data frame returned by `edid()`,
+#'   `get_edid_results_attgt()`, or `get_edid_results_agg()`
+#' @param mod_type Character string specifying the type of model you want to
+#'   plot. Options are `"attgt"`, `"es"`, and `"cal"`. If your results data
+#'   frame contains only one model type, you can leave the default `NULL`
+#'   option and the function will automatically plot that model type.
+#' @param ci A character string specifying the confidence intervals you want to
+#'   display. The options are: `"95_boot"` (default), `"90_boot"`,
+#'   `"95_analytic"`, `"90_analytic"`, `"boot"`, `"analytic"`, `"95"`, `"90"`,
+#'   and `"all"`. `"boot"` and `"analytic"` will plot both the 95% and 90%
+#'   bootstrapped or analytic confidence bands respectively. `"95"` and `"90"`
+#'   will plot both the bootstrapped and analytic confidence bands at the 95%
+#'   or 90% confidence levels respectively. `"all"` will plot all four
+#'   confidence bands.
+#' @param colors A character string or vector specifying the color palette.
+#'   There are three special string characters that will specify specific
+#'   palettes from the colorblind-friendly `viridis` color palettes: `"turbo"`
+#'   (default), `"viridis"`, and `"viridis_.75"` which is the viridis palette
+#'   with a truncated range that I find more visually appealing. You can also
+#'   specify your own custom palette by supplying a character vector the same
+#'   length as the number of requested confidence intervals. The order matters:
+#'   colors are ordered from largest confidence intervals to smallest. That
+#'   means the last item of the vector corresponds to the smallest confidence
+#'   interval, which will be in the foreground and therefore the dominant color
+#'   of the plot. The ATT points will also be this color.
+#' @param error_bar_width A number specifying the width of the horizontal end
+#'   points of the error bars. If error bars are too wide, the first and/or
+#'   last time period's bars may extend beyond the x-axis limits and get
+#'   clipped, so you may need to adjust this setting accordingly.
+#' @param x_lim_padding A number specifying the amount by which to extend the
+#'   x-axis limits in order to provide "padding" for the error bars to prevent
+#'   clipping. If your error bars are getting clipped (i.e., the first or last
+#'   time period's horizontal bar ends do not appear), you will need to
+#'   increase this value. You can also decrease the value if you have extra
+#'   unnecessary space at the ends of the x-axis.
+#' @param text_size_base An integer specifying the ggplot2 base text size.
+#'   `NULL` defaults to `11`, the ggplot2 default. If the value is supplied
+#'   and the values to the other `text_size_*` arguments are left `NULL`, the
+#'   text sizes of those elements will be updated to match the supplied base
+#'   text size.
+#' @param text_size_title An integer specifying the plot title size. `NULL`
+#'   defaults to the same size as `text_size_base`.
+#' @param text_size_legend An integer specifying the ggplot2 legend text size.
+#'   `NULL` defaults to two sizes smaller than `text_size_base`.
+#' @param text_size_legend_title An integer specifying the ggplot2 legend title
+#'   size. `NULL` defaults to the same size as `text_size_base`.
+#' @param g_cur Integer identifying the treament group identifier for an
+#'   ATT(g,t) plot.
+#' @param ylims Numeric vector of length 2 specifying the y-axis limits. Used
+#'   only by `mod_type = "attgt"` and when `get_y_axes_same = TRUE` in the
+#'   `plot_edid()` function.
+#' @param xlims Numeric vector of length 2 specifying the x-axis limits. This
+#'   is used only by `mod_type = "attgt"` because the x-axis limits used to
+#'   provide padding for the error bars are computed within the `plot_edid()`
+#'   function.
+#'
+#' @returns A single ggplot2 plot with EDiD results.
+#'
+#' @noRd
+plot_edid_one <- function(
+    res_dat,
+    mod_type,
+    ci = '95_boot',
+    colors = NULL,
+    error_bar_width = NULL,
+    x_lim_padding = NULL,
+    text_size_base = NULL,
+    text_size_title = NULL,
+    text_size_legend = NULL,
+    text_size_legend_title = NULL,
+    g_cur = NULL,
+    ylims = NULL,
+    xlims = NULL
+) {
+  if (is.null(text_size_base)) text_size_base <- 11
+  if (is.null(text_size_title)) text_size_title <- text_size_base
+  if (is.null(text_size_legend)) text_size_legend <- text_size_base - 2
+  if (is.null(text_size_legend_title)) text_size_legend_title <- text_size_base
+
+  dat <- dplyr::filter(res_dat, type == mod_type)
+  if (mod_type == 'es') {
+    x_lab <- 'Time Since Event'
+  } else {
+    x_lab <- 'Time'
+  }
+  if (mod_type == 'es') {  # Add padding so error bars dont get clipped
+    xlims <- c(min(dat$e) - x_lim_padding, max(dat$e) + x_lim_padding)
+  } else if (mod_type == 'cal') {
+    xlims <- c(min(dat$t) - x_lim_padding, max(dat$t) + x_lim_padding)
+  }
+  if (mod_type == 'attgt') {  # Subset a single g if making ATTgt plot
+    dat <- dplyr::filter(dat, g == g_cur)
+    title <- g_cur
+  } else if (mod_type == 'es') {
+    title <- 'Event Study'
+  } else {
+    title <- 'Calendar Time'
+  }
+
+  ebars <- ci # for cases where a single CI is requested
+  if (mod_type != 'attgt') {
+    pct_boot_larger <- dat |> # Order SEs by size for plotting & color setting
+      dplyr::filter(is.na(e) | e >= 0) |>
+      dplyr::mutate(boot_v_analytic = se_boot - se_analytic) |>
+      dplyr::summarise(boot_larger = sum(boot_v_analytic > 0) / dplyr::n())
+    if (pct_boot_larger >= .5) {
+      larger_se <- 'boot'
+      smaller_se <- 'analytic'
+    } else {
+      larger_se <- 'analytic'
+      smaller_se <- 'boot'
+    }
+    pct_95_larger <- dat |>
+      dplyr::filter(is.na(e) | e >= 0) |>
+      dplyr::mutate(
+        nine5_v_90 = get(stringr::str_c('ci_up_95_', smaller_se)) -
+          get(stringr::str_c('ci_up_90_', larger_se))
+      ) |>
+      dplyr::summarise(nine5_larger = sum(nine5_v_90 > 0) / dplyr::n())
+    if (pct_95_larger >= .5) {
+      second_ci <- stringr::str_c('95_', smaller_se)
+      third_ci <- stringr::str_c('90_', larger_se)
+    } else {
+      second_ci <- stringr::str_c('90_', larger_se)
+      third_ci <- stringr::str_c('95_', smaller_se)
+    }
+    if (ci == 'all') {
+      ebars <- c(
+        stringr::str_c('95_', larger_se),
+        second_ci,
+        third_ci,
+        paste0('90_', smaller_se)
+      )
+    } else if (ci == 'boot') {
+      ebars <- c('95_boot', '90_boot')
+    } else if (ci == 'analytic') {
+      ebars <- c('95_analytic', '90_analytic')
+    } else if (ci == '95') {
+      ebars <- c(
+        stringr::str_c('95_', larger_se), stringr::str_c('95_', smaller_se)
+      )
+    } else if (ci == '90') {
+      ebars <- c(
+        stringr::str_c('90_', larger_se), stringr::str_c('90_', smaller_se)
+      )
+    }
+  } else {  # have to force all ATTgt to be same, assume boot > analyt, 95 > 90
+    if (ci == 'all') {
+      ebars <- c('95_boot', '95_analytic', '90_boot', '90_analytic')
+    } else if (ci == 'boot') {
+      ebars <- c('95_boot', '90_boot')
+    } else if (ci == 'analytic') {
+      ebars <- c('95_analytic', '90_analytic')
+    } else if (ci == '95') {
+      ebars <- c('95_boot', '95_analytic')
+    } else if (ci == '90') {
+      ebars <- c('90_boot', '90_analytic')
+    }
+  }
+
+  n_ebars <- length(ebars)
+  if (  # Color setup
+    !is.null(colors) &
+    !(colors[1] %in% c('turbo', 'viridis', 'viridis_.75')) &
+    n_ebars != length(colors)
+  ) {
+    stop('must specify one color per confidence interval')
+  }
+  if (colors[1] == 'turbo') {
+    if (n_ebars == 1) {
+      colors <- '#FEA632FF'
+    } else {
+      colors <- scales::viridis_pal(option = 'H', end = .7)(n_ebars)
+    }
+  } else if (colors[1] == 'viridis') {
+    if (n_ebars == 1) {
+      colors <- '#FDE725FF'
+    } else {
+      colors <- scales::viridis_pal()(n_ebars)
+    }
+  } else if (colors[1] == 'viridis_.75') {
+    if (n_ebars == 1) {
+      colors <- '#5DC863FF'
+    } else {
+      colors <- scales::viridis_pal(end = .75)(n_ebars)
+    }
+  }
+
+  if (mod_type == 'es') {  # Begin building plot; only non-anticip t in color
+    plt <- ggplot2::ggplot(dplyr::filter(dat, e >= 0), ggplot2::aes(e, att))
+  } else if (mod_type == 'attgt') {
+    plt <- ggplot2::ggplot(
+      dplyr::filter(dat, is.na(e) | e >= 0), ggplot2::aes(t, att)
+    )
+  } else {
+    plt <- ggplot2::ggplot(dat, ggplot2::aes(t, att))
+  }
+
+  plt <- plt +
+    ggplot2::geom_errorbar(ggplot2::aes(
+      ymin = get(stringr::str_c('ci_low_', ebars[1])),
+      ymax = get(stringr::str_c('ci_up_', ebars[1])),
+      color = 'a',
+      width = error_bar_width
+    ))
+  legend_labs <- c(
+    'a' = stringr::str_c(
+      stringr::str_sub(ebars[1], 1, 2),
+      '% ',
+      stringr::str_sub(ebars[1], 4, -1)
+    )
+  )
+  color_vec <- c('a' = colors[1])
+
+  if (n_ebars > 1) {
+    plt <- plt +
+      ggplot2::geom_errorbar(ggplot2::aes(
+        ymin = get(stringr::str_c('ci_low_', ebars[2])),
+        ymax = get(stringr::str_c('ci_up_', ebars[2])),
+        color = 'b',
+        width = error_bar_width
+      ))
+    legend_labs <- c(
+      legend_labs,
+      'b' = stringr::str_c(
+        stringr::str_sub(ebars[2], 1, 2),
+        '% ',
+        stringr::str_sub(ebars[2], 4, -1)
+      )
+    )
+    color_vec <- c(color_vec, 'b' = colors[2])
+  }
+
+  if (n_ebars > 2) {
+    plt <- plt +
+      ggplot2::geom_errorbar(ggplot2::aes(
+        ymin = get(stringr::str_c('ci_low_', ebars[3])),
+        ymax = get(stringr::str_c('ci_up_', ebars[3])),
+        color = 'c',
+        width = error_bar_width
+      )) +
+      ggplot2::geom_errorbar(ggplot2::aes(
+        ymin = get(stringr::str_c('ci_low_', ebars[4])),
+        ymax = get(stringr::str_c('ci_up_', ebars[4])),
+        color = 'd',
+        width = error_bar_width
+      ))
+    legend_labs <- c(
+      legend_labs,
+      'c' = stringr::str_c(
+        stringr::str_sub(ebars[3], 1, 2),
+        '% ',
+        stringr::str_sub(ebars[3], 4, -1)
+      ),
+      'd' = stringr::str_c(
+        stringr::str_sub(ebars[4], 1, 2),
+        '% ',
+        stringr::str_sub(ebars[4], 4, -1)
+      )
+    )
+    color_vec <- c(color_vec, 'c' = colors[3], 'd' = colors[4])
+  }
+
+  plt <- plt +
+    ggplot2::geom_point(color = colors[n_ebars]) +
+    ggplot2::geom_hline(yintercept = 0, lty = 'dashed') +
+    ggplot2::theme_minimal(base_size = text_size_base) +
+    ggplot2::theme(
+      panel.grid = ggplot2::element_blank(),
+      plot.title = ggplot2::element_text(size = text_size_title, hjust = .5),
+      legend.text = ggplot2::element_text(size = text_size_legend),
+      legend.title = ggplot2::element_text(size = text_size_legend_title)
+    ) +
+    ggplot2::scale_color_manual(
+      name = 'Simult.\nConf. Bands',
+      labels = legend_labs,
+      values = color_vec
+    ) +
+    ggplot2::xlim(xlims) +
+    ggplot2::ylab('ATT') +
+    ggplot2::xlab(x_lab) +
+    ggplot2::ggtitle(title)
+  if (!is.null(ylims)) plt <- plt + ggplot2::ylim(ylims)  # consistent ATTgt axes
+
+  if (mod_type != 'cal') {  # Add anticipation times in black
+    dat_anticip <- dplyr::filter(dat, e < 0)
+    plt <- plt +
+      ggplot2::geom_point(data = dat_anticip, color = 'black') +
+      ggplot2::geom_errorbar(
+        data = dat_anticip,
+        ggplot2::aes(
+          ymin = get(stringr::str_c('ci_low_', ebars[1])),
+          ymax = get(stringr::str_c('ci_up_', ebars[1]))
+        ),
+        color = 'black',
+        width = error_bar_width
+      )
+    if (n_ebars > 1) {
+      plt <- plt +
+        ggplot2::geom_errorbar(
+          data = dat_anticip,
+          ggplot2::aes(
+            ymin = get(stringr::str_c('ci_low_', ebars[2])),
+            ymax = get(stringr::str_c('ci_up_', ebars[2]))
+          ),
+          color = 'black',
+          width = error_bar_width
+        )
+    }
+    if (n_ebars > 2) {
+      plt <- plt +
+        ggplot2::geom_errorbar(
+          data = dat_anticip,
+          ggplot2::aes(
+            ymin = get(stringr::str_c('ci_low_', ebars[3])),
+            ymax = get(stringr::str_c('ci_up_', ebars[3]))
+          ),
+          color = 'black',
+          width = error_bar_width
+        )
+    }
+    if (n_ebars > 3) {
+      plt <- plt +
+        ggplot2::geom_errorbar(
+          data = dat_anticip,
+          ggplot2::aes(
+            ymin = get(stringr::str_c('ci_low_', ebars[4])),
+            ymax = get(stringr::str_c('ci_up_', ebars[4]))
+          ),
+          color = 'black',
+          width = error_bar_width
+        )
+    }
+  }
+  plt
+}
