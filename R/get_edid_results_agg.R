@@ -14,8 +14,8 @@
 #' @param type A string indicating the type of aggregation, either `es` for
 #'   event study (default) or `cal` for calendar time.
 #' @param res Optionally supply the results data frame returned by
-#'   [edid_get_results_attgt()]. The default `NULL` will run
-#'   [edid_get_results_attgt()] under the hood to obtain the data frame.
+#'   [get_edid_results_attgt()]. The default `NULL` will run
+#'   [get_edid_results_attgt()] under the hood to obtain the data frame.
 #' @param cluster Boolean specifying whether to cluster standard errors at a
 #'   level higher than the unit level. The default is set to `FALSE`, which
 #'   results in standard errors clustered at the unit level. A cluster variable

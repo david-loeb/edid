@@ -32,8 +32,8 @@ re-specify non-zero anticipation periods.}
 event study (default) or \code{cal} for calendar time.}
 
 \item{res}{Optionally supply the results data frame returned by
-\code{\link[=edid_get_results_attgt]{edid_get_results_attgt()}}. The default \code{NULL} will run
-\code{\link[=edid_get_results_attgt]{edid_get_results_attgt()}} under the hood to obtain the data frame.}
+\code{\link[=get_edid_results_attgt]{get_edid_results_attgt()}}. The default \code{NULL} will run
+\code{\link[=get_edid_results_attgt]{get_edid_results_attgt()}} under the hood to obtain the data frame.}
 
 \item{cluster}{Boolean specifying whether to cluster standard errors at a
 level higher than the unit level. The default is set to \code{FALSE}, which
