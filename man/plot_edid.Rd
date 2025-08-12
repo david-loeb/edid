@@ -18,6 +18,7 @@ plot_edid(
   text_size_legend = NULL,
   text_size_legend_title = NULL,
   text_font = NULL,
+  anticip_color = NULL,
   gt_g = NULL,
   gt_ci_order = NULL,
   gt_ncol = NULL,
@@ -91,6 +92,9 @@ size. \code{NULL} defaults to the same size as \code{text_size_base}.}
 \item{text_font}{A string specifying the name of the font family to use.
 \code{NULL} defaults to \code{sans}, the ggplot2 default.}
 
+\item{anticip_color}{A string specifying the color of anticipation periods.
+\code{NULL} defaults to \code{"black"}.}
+
 \item{gt_g}{This argument only applies to \code{mod_type = "attgt"}. A numeric
 vector specifying a subset of treatment groups to plot. The default \code{NULL}
 will plot all treatment groups.}
@@ -130,17 +134,18 @@ package to fashion these individual plots into a grid. You can choose to
 plot any or all of the confidence intervals.
 }
 \details{
-Any anticipation years will be plotted in black and post-treatment years
-will be plotted in color. An algorithm finds the size order of the
-confidence intervals and enters them into the plot starting with the largest
-and ending with the smallest, so that the confidence interval in the
-foreground of the plot is the smallest. The color of point representing the
-ATT is colored the same as this foreground confidence interval. The
-algorithm finds the relative size of the confidence intervals at each time
-period and assigns order based on the proportion of time periods in which
-each confidence interval is larger than another. For example, if the 95\%
-analytic confidence interval is larger than the 90\% bootstrapped confidence
-interval in 70\% of the time periods, it will get the higher order assignment.
+Any anticipation years will be plotted in black by default or a custom
+user-specified color and post-treatment years will be plotted in color.
+An algorithm finds the size order of the confidence intervals and enters
+them into the plot starting with the largest and ending with the smallest,
+so that the confidence interval in the foreground of the plot is the
+smallest. The color of point representing the ATT is colored the same as
+this foreground confidence interval. The algorithm finds the relative size
+of the confidence intervals at each time period and assigns order based on
+the proportion of time periods in which each confidence interval is larger
+than another. For example, if the 95\% analytic confidence interval is larger
+than the 90\% bootstrapped confidence interval in 70\% of the time periods, it
+will get the higher order assignment.
 }
 \examples{
 edid_res <- edid(

@@ -6,17 +6,18 @@
 #' plot any or all of the confidence intervals.
 #'
 #' @details
-#' Any anticipation years will be plotted in black and post-treatment years
-#' will be plotted in color. An algorithm finds the size order of the
-#' confidence intervals and enters them into the plot starting with the largest
-#' and ending with the smallest, so that the confidence interval in the
-#' foreground of the plot is the smallest. The color of point representing the
-#' ATT is colored the same as this foreground confidence interval. The
-#' algorithm finds the relative size of the confidence intervals at each time
-#' period and assigns order based on the proportion of time periods in which
-#' each confidence interval is larger than another. For example, if the 95%
-#' analytic confidence interval is larger than the 90% bootstrapped confidence
-#' interval in 70% of the time periods, it will get the higher order assignment.
+#' Any anticipation years will be plotted in black by default or a custom
+#' user-specified color and post-treatment years will be plotted in color.
+#' An algorithm finds the size order of the confidence intervals and enters
+#' them into the plot starting with the largest and ending with the smallest,
+#' so that the confidence interval in the foreground of the plot is the
+#' smallest. The color of point representing the ATT is colored the same as
+#' this foreground confidence interval. The algorithm finds the relative size
+#' of the confidence intervals at each time period and assigns order based on
+#' the proportion of time periods in which each confidence interval is larger
+#' than another. For example, if the 95% analytic confidence interval is larger
+#' than the 90% bootstrapped confidence interval in 70% of the time periods, it
+#' will get the higher order assignment.
 #'
 #' @param res_dat A results data frame returned by [edid()],
 #'   [get_edid_results_attgt()], or [get_edid_results_agg()]
@@ -71,6 +72,8 @@
 #'   size. `NULL` defaults to the same size as `text_size_base`.
 #' @param text_font A string specifying the name of the font family to use.
 #'   `NULL` defaults to `sans`, the ggplot2 default.
+#' @param anticip_color A string specifying the color of anticipation periods.
+#'   `NULL` defaults to `"black"`.
 #' @param gt_g This argument only applies to `mod_type = "attgt"`. A numeric
 #'   vector specifying a subset of treatment groups to plot. The default `NULL`
 #'   will plot all treatment groups.
@@ -184,6 +187,7 @@ plot_edid <- function(
     text_size_legend = NULL,
     text_size_legend_title = NULL,
     text_font = NULL,
+    anticip_color = NULL,
     gt_g = NULL,
     gt_ci_order = NULL,
     gt_ncol = NULL,
@@ -236,7 +240,8 @@ plot_edid <- function(
         dat, 'attgt', ci, colors, point_size,
         error_bar_vline_width, error_bar_hline_width, xlim_padding,
         text_size_base, text_size_title, text_size_legend,
-        text_size_legend_title, text_font, g, gt_ci_order, ylims, xlims
+        text_size_legend_title, text_font, anticip_color,
+        g, gt_ci_order, ylims, xlims
       )
     })
     purrr::reduce(plts, `+`) + patchwork::plot_layout(
@@ -247,7 +252,7 @@ plot_edid <- function(
       res_dat, mod_type, ci, colors, point_size,
       error_bar_vline_width, error_bar_hline_width, xlim_padding,
       text_size_base, text_size_title, text_size_legend,
-      text_size_legend_title, text_font
+      text_size_legend_title, text_font, anticip_color
     )
   }
 }
@@ -309,6 +314,8 @@ plot_edid <- function(
 #'   size. `NULL` defaults to the same size as `text_size_base`.
 #' @param text_font A string specifying the name of the font family to use.
 #'   `NULL` defaults to `sans`, the ggplot2 default.
+#' @param anticip_color A string specifying the color of anticipation periods.
+#'   `NULL` defaults to `"black"`.
 #' @param g_cur Integer identifying the treament group identifier for an
 #'   ATT(g,t) plot.
 #' @param ci_order A character vector specifying a custom order for the
@@ -355,6 +362,7 @@ plot_edid_one <- function(
   if (is.null(text_size_legend)) text_size_legend <- text_size_base - 2
   if (is.null(text_size_legend_title)) text_size_legend_title <- text_size_base
   if (is.null(text_font)) text_font <- 'sans'
+  if (is.null(anticip_color)) anticip_color <- 'black'
 
   dat <- dplyr::filter(res_dat, type == mod_type)
   if (mod_type == 'es') {
@@ -603,7 +611,7 @@ plot_edid_one <- function(
     dat_anticip <- dplyr::filter(dat, e < 0)
     plt <- plt +
       ggplot2::geom_point(
-        data = dat_anticip, color = 'black', size = point_size
+        data = dat_anticip, color = anticip_color, size = point_size
       ) +
       ggplot2::geom_errorbar(
         data = dat_anticip,
@@ -611,7 +619,7 @@ plot_edid_one <- function(
           ymin = get(stringr::str_c('ci_low_', ebars[1])),
           ymax = get(stringr::str_c('ci_up_', ebars[1]))
         ),
-        color = 'black',
+        color = anticip_color,
         width = error_bar_hline_width,
         linewidth = error_bar_vline_width
       )
@@ -623,7 +631,7 @@ plot_edid_one <- function(
             ymin = get(stringr::str_c('ci_low_', ebars[2])),
             ymax = get(stringr::str_c('ci_up_', ebars[2]))
           ),
-          color = 'black',
+          color = anticip_color,
           width = error_bar_hline_width,
           linewidth = error_bar_vline_width
         )
@@ -636,7 +644,7 @@ plot_edid_one <- function(
             ymin = get(stringr::str_c('ci_low_', ebars[3])),
             ymax = get(stringr::str_c('ci_up_', ebars[3]))
           ),
-          color = 'black',
+          color = anticip_color,
           width = error_bar_hline_width,
           linewidth = error_bar_vline_width
         ) +
@@ -646,7 +654,7 @@ plot_edid_one <- function(
             ymin = get(stringr::str_c('ci_low_', ebars[4])),
             ymax = get(stringr::str_c('ci_up_', ebars[4]))
           ),
-          color = 'black',
+          color = anticip_color,
           width = error_bar_hline_width,
           linewidth = error_bar_vline_width
         )
