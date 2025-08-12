@@ -602,6 +602,7 @@ plot_edid_one <- function(
       labels = legend_labs,
       values = color_vec
     ) +
+    ggplot2::scale_x_continuous(breaks = scales::breaks_pretty()) +
     ggplot2::xlim(xlims) +
     ggplot2::ylab('ATT') +
     ggplot2::xlab(x_lab) +
