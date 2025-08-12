@@ -258,9 +258,16 @@ plot_edid <- function(
         g, gt_ci_order, ylims
       )
     })
-    plt <- purrr::reduce(plts, `+`) + patchwork::plot_layout(
-      ncol = gt_ncol, guides = 'collect', axes = 'collect', axis_titles = 'collect'
-    )
+    if (gt_y_axes_same) {
+      plt <- purrr::reduce(plts, `+`) + patchwork::plot_layout(
+        ncol = gt_ncol, guides = 'collect', axes = 'collect', axis_titles = 'collect'
+      )
+    } else {
+      plt <- purrr::reduce(plts, `+`) + patchwork::plot_layout(
+        ncol = gt_ncol, guides = 'collect', axes = 'collect_x', axis_titles = 'collect'
+      )
+    }
+
     if (!is.null(title)) {
       plt <- plt + patchwork::plot_annotation(
         title = title,
