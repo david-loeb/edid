@@ -19,6 +19,7 @@ plot_edid(
   text_size_legend_title = NULL,
   text_font = NULL,
   gt_g = NULL,
+  gt_ci_order = NULL,
   gt_ncol = NULL,
   gt_y_axes_same = TRUE
 )
@@ -94,6 +95,19 @@ size. \code{NULL} defaults to the same size as \code{text_size_base}.}
 vector specifying a subset of treatment groups to plot. The default \code{NULL}
 will plot all treatment groups.}
 
+\item{gt_ci_order}{This argument only applies to \code{mod_type = "attgt"}. A
+character vector specifying a custom order for the confidence intervals
+to be entered into the plot. The vector must contain the names of all
+of the confidence intervals you are plotting and nothing else. The names
+are \code{"95_boot"}, \code{"90_boot"}, \code{"95_anlaytic"}, and \code{"90_analytic"}. This
+is only necessary if you want a different order than the default, which is
+\code{c("95_boot", "95_analytic", "90_boot", "90_analytic")}. Unlike the event
+study and calendar time plots, an ordering algorithm cannot be used to
+find the order of confidence interval size because it may differ across
+treatment groups, and the order must be the same across all treatment
+groups. Therefore the default makes an assumption about the order, and
+that order can only be changed with this argument.}
+
 \item{gt_ncol}{This argument only applies to \code{mod_type = "attgt"}. An
 integer specifying the number of columns in the plot grid, i.e. the final
 output that is a grid of the individual ATT(g,t) plots. If the default
@@ -110,11 +124,23 @@ A ggplot2 plot. If \code{mod_type = "attgt"}, it returns a grid of
 individual ATT(g,t) ggplots created by the patchwork package.
 }
 \description{
-This function uses ggplot2 to plot the EDiD results. If you wish to plot
+This function uses ggplot2 to plot the EDiD results. If you want to plot
 multiple individual treatment group results, the function uses the patchwork
 package to fashion these individual plots into a grid. You can choose to
-plot any or all of the confidence intervals. Any anticipation years will be
-plotted in black and post-treatment years will be plotted in color.
+plot any or all of the confidence intervals.
+}
+\details{
+Any anticipation years will be plotted in black and post-treatment years
+will be plotted in color. An algorithm finds the size order of the
+confidence intervals and enters them into the plot starting with the largest
+and ending with the smallest, so that the confidence interval in the
+foreground of the plot is the smallest. The color of point representing the
+ATT is colored the same as this foreground confidence interval. The
+algorithm finds the relative size of the confidence intervals at each time
+period and assigns order based on the proportion of time periods in which
+each confidence interval is larger than another. For example, if the 95\%
+analytic confidence interval is larger than the 90\% bootstrapped confidence
+interval in 70\% of the time periods, it will get the higher order assignment.
 }
 \examples{
 edid_res <- edid(

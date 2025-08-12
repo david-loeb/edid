@@ -1,10 +1,22 @@
 #' Plot EDiD results
 #'
-#' This function uses ggplot2 to plot the EDiD results. If you wish to plot
+#' This function uses ggplot2 to plot the EDiD results. If you want to plot
 #' multiple individual treatment group results, the function uses the patchwork
 #' package to fashion these individual plots into a grid. You can choose to
-#' plot any or all of the confidence intervals. Any anticipation years will be
-#' plotted in black and post-treatment years will be plotted in color.
+#' plot any or all of the confidence intervals.
+#'
+#' @details
+#' Any anticipation years will be plotted in black and post-treatment years
+#' will be plotted in color. An algorithm finds the size order of the
+#' confidence intervals and enters them into the plot starting with the largest
+#' and ending with the smallest, so that the confidence interval in the
+#' foreground of the plot is the smallest. The color of point representing the
+#' ATT is colored the same as this foreground confidence interval. The
+#' algorithm finds the relative size of the confidence intervals at each time
+#' period and assigns order based on the proportion of time periods in which
+#' each confidence interval is larger than another. For example, if the 95%
+#' analytic confidence interval is larger than the 90% bootstrapped confidence
+#' interval in 70% of the time periods, it will get the higher order assignment.
 #'
 #' @param res_dat A results data frame returned by [edid()],
 #'   [get_edid_results_attgt()], or [get_edid_results_agg()]
@@ -62,6 +74,18 @@
 #' @param gt_g This argument only applies to `mod_type = "attgt"`. A numeric
 #'   vector specifying a subset of treatment groups to plot. The default `NULL`
 #'   will plot all treatment groups.
+#' @param gt_ci_order This argument only applies to `mod_type = "attgt"`. A
+#'   character vector specifying a custom order for the confidence intervals
+#'   to be entered into the plot. The vector must contain the names of all
+#'   of the confidence intervals you are plotting and nothing else. The names
+#'   are `"95_boot"`, `"90_boot"`, `"95_anlaytic"`, and `"90_analytic"`. This
+#'   is only necessary if you want a different order than the default, which is
+#'   `c("95_boot", "95_analytic", "90_boot", "90_analytic")`. Unlike the event
+#'   study and calendar time plots, an ordering algorithm cannot be used to
+#'   find the order of confidence interval size because it may differ across
+#'   treatment groups, and the order must be the same across all treatment
+#'   groups. Therefore the default makes an assumption about the order, and
+#'   that order can only be changed with this argument.
 #' @param gt_ncol This argument only applies to `mod_type = "attgt"`. An
 #'   integer specifying the number of columns in the plot grid, i.e. the final
 #'   output that is a grid of the individual ATT(g,t) plots. If the default
@@ -161,6 +185,7 @@ plot_edid <- function(
     text_size_legend_title = NULL,
     text_font = NULL,
     gt_g = NULL,
+    gt_ci_order = NULL,
     gt_ncol = NULL,
     gt_y_axes_same = TRUE
 ) {
@@ -211,7 +236,7 @@ plot_edid <- function(
         dat, 'attgt', ci, colors, point_size,
         error_bar_vline_width, error_bar_hline_width, xlim_padding,
         text_size_base, text_size_title, text_size_legend,
-        text_size_legend_title, text_font, g, ylims, xlims
+        text_size_legend_title, text_font, g, gt_ci_order, ylims, xlims
       )
     })
     purrr::reduce(plts, `+`) + patchwork::plot_layout(
@@ -286,6 +311,13 @@ plot_edid <- function(
 #'   `NULL` defaults to `sans`, the ggplot2 default.
 #' @param g_cur Integer identifying the treament group identifier for an
 #'   ATT(g,t) plot.
+#' @param ci_order A character vector specifying a custom order for the
+#'   confidence intervals to be entered into an `"attgt"` plot. The vector
+#'   must contain the names of all of the confidence intervals you are plotting
+#'   and nothing else. The names are `"95_boot"`, `"90_boot"`, `"95_anlaytic"`,
+#'   and `"90_analytic"`. This is only necessary if you want a different order
+#'   than the default, which is
+#'   `c("95_boot", "95_analytic", "90_boot", "90_analytic")`.
 #' @param ylims Numeric vector of length 2 specifying the y-axis limits. Used
 #'   only by `mod_type = "attgt"` and when `get_y_axes_same = TRUE` in the
 #'   `plot_edid()` function.
@@ -312,6 +344,7 @@ plot_edid_one <- function(
     text_size_legend_title = NULL,
     text_font = NULL,
     g_cur = NULL,
+    ci_order = NULL,
     ylims = NULL,
     xlims = NULL
 ) {
@@ -390,17 +423,42 @@ plot_edid_one <- function(
         stringr::str_c('90_', larger_se), stringr::str_c('90_', smaller_se)
       )
     }
-  } else {  # have to force all ATTgt to be same, assume boot > analyt, 95 > 90
+  } else {  # make all ATTgt same; 95boot > 95an > 90boot > 90an unless custom
+    ci_all <- c('95_boot', '95_analytic', '90_boot', '90_analytic')
+    ci_boot <- c('95_boot', '90_boot')
+    ci_analytic <- c('95_analytic', '90_analytic')
+    ci_95 <- c('95_boot', '95_analytic')
+    ci_90 <- c('90_boot', '90_analytic')
     if (ci == 'all') {
-      ebars <- c('95_boot', '95_analytic', '90_boot', '90_analytic')
+      if (is.null(ci_order)) {
+        ebars <- ci_all
+      } else if (length(ci_order != 4) | !all(ci_order %in% ci_all)) {
+        stop('custom CI order must contain all requested CIs and nothing else')
+      }
     } else if (ci == 'boot') {
-      ebars <- c('95_boot', '90_boot')
+      if (is.null(ci_order)) {
+        ebars <- ci_boot
+      } else if (length(ci_order != 2) | !all(ci_order %in% ci_boot)) {
+        stop('custom CI order must contain all requested CIs and nothing else')
+      }
     } else if (ci == 'analytic') {
-      ebars <- c('95_analytic', '90_analytic')
+      if (is.null(ci_order)) {
+        ebars <- ci_analytic
+      } else if (length(ci_order != 2) | !all(ci_order %in% ci_analytic)) {
+        stop('custom CI order must contain all requested CIs and nothing else')
+      }
     } else if (ci == '95') {
-      ebars <- c('95_boot', '95_analytic')
+      if (is.null(ci_order)) {
+        ebars <- ci_95
+      } else if (length(ci_order != 2) | !all(ci_order %in% ci_95)) {
+        stop('custom CI order must contain all requested CIs and nothing else')
+      }
     } else if (ci == '90') {
-      ebars <- c('90_boot', '90_analytic')
+      if (is.null(ci_order)) {
+        ebars <- ci_90
+      } else if (length(ci_order != 2) | !all(ci_order %in% ci_90)) {
+        stop('custom CI order must contain all requested CIs and nothing else')
+      }
     }
   }
 
