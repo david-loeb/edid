@@ -67,11 +67,12 @@ plot_edid(edid_results, mod_type = "es")
 <img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
 
 The plots can be customized in a number of ways, including the
-confidence intervals to plot, color scheme, text sizes, font, error bar
-width and more. You can also save the plot result and customize it
+confidence intervals to plot, color scheme, point and line sizes, text
+sizes, font and more. You can also save the plot result and customize it
 further with your own {ggplot2} pipeline. The plot below shows the
 result of requesting a plot for the full set of $ATT(g,t)$ results and
-all confidence intervals with reduced text size. (I increase the
+all confidence intervals with thicker vertical error bar lines, larger
+points, and smaller text size than the defaults. (I increase the
 confidence interval size in the example to provide a more demonstrative
 plot.)
 
@@ -93,6 +94,8 @@ plot_edid(
   edid_res_largerCI, 
   mod_type = "attgt", 
   ci = "all", 
+  point_size = 2.5,
+  error_bar_vline_width = 1.5,
   text_size_base = 10
 )
 ```
