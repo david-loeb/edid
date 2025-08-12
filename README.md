@@ -94,8 +94,8 @@ plot_edid(
   edid_res_largerCI, 
   mod_type = "attgt", 
   ci = "all", 
-  point_size = 2.5,
-  error_bar_vline_width = 1.5,
+  point_size = 2,
+  error_bar_vline_width = 1,
   text_size_base = 10
 )
 ```
