@@ -95,7 +95,7 @@ plot_edid(
   mod_type = "attgt", 
   ci = "all", 
   point_size = 2,
-  error_bar_vline_width = 1,
+  error_bar_vline_width = 0.5,
   text_size_base = 10
 )
 ```
