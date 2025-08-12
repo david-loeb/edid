@@ -350,6 +350,7 @@ plot_edid_one <- function(
     text_size_legend = NULL,
     text_size_legend_title = NULL,
     text_font = NULL,
+    anticip_color = NULL,
     g_cur = NULL,
     ci_order = NULL,
     ylims = NULL,
