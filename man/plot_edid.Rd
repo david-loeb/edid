@@ -6,7 +6,7 @@
 \usage{
 plot_edid(
   res_dat,
-  mod_type = NULL,
+  type = NULL,
   ci = "95_boot",
   colors = "turbo",
   title = NULL,
@@ -20,6 +20,7 @@ plot_edid(
   text_size_title = NULL,
   text_size_legend_title = NULL,
   text_size_legend_text = NULL,
+  show_legend = TRUE,
   text_font = NULL,
   anticip_color = NULL,
   gt_g = NULL,
@@ -32,7 +33,7 @@ plot_edid(
 \item{res_dat}{A results data frame returned by \code{\link[=edid]{edid()}},
 \code{\link[=get_edid_results_attgt]{get_edid_results_attgt()}}, or \code{\link[=get_edid_results_agg]{get_edid_results_agg()}}}
 
-\item{mod_type}{Character string specifying the type of model you want to
+\item{type}{Character string specifying the type of model you want to
 plot. Options are \code{"attgt"}, \code{"es"}, and \code{"cal"}. If your results data
 frame contains only one model type, you can leave the default \code{NULL}
 option and the function will automatically plot that model type.}
@@ -93,10 +94,12 @@ text sizes of those elements will be updated to match the supplied base
 text size.}
 
 \item{text_size_title}{A number specifying the plot title size. \code{NULL}
-defaults to the same size as \code{text_size_base}. For \code{mod_type = "aggt"},
-this parameter corresponds to the size of the individual ATT(g,t) plot
-titles rather than the overall plot grid title. The plot grid title will
-always be set to \code{text_size_base + 1} (the ggplot2 default).}
+defaults to\code{text_size_base + 1}, the ggplot2 default, for \code{type = "es"}
+and \code{type = "cal"}. For \code{type = "aggt"}, this parameter corresponds to the
+size of the individual ATT(g,t) plot titles rather than the overall plot
+grid title. In this case, \code{NULL} defaults to the same size as
+\code{text_size_base}. The plot grid title will always be set to
+\code{text_size_base + 1} (the ggplot2 default).}
 
 \item{text_size_legend_title}{A number specifying the ggplot2 legend title
 size. \code{NULL} defaults to the same size as \code{text_size_base}.}
@@ -104,17 +107,20 @@ size. \code{NULL} defaults to the same size as \code{text_size_base}.}
 \item{text_size_legend_text}{A number specifying the ggplot2 legend text size.
 \code{NULL} defaults to two sizes smaller than \code{text_size_base}.}
 
+\item{show_legend}{A boolean specifying whether to display the confidence
+interval legend. Default is \code{TRUE}.}
+
 \item{text_font}{A string specifying the name of the font family to use.
 \code{NULL} defaults to \code{sans}, the ggplot2 default.}
 
 \item{anticip_color}{A string specifying the color of anticipation periods.
 \code{NULL} defaults to \code{"black"}.}
 
-\item{gt_g}{This argument only applies to \code{mod_type = "attgt"}. A numeric
+\item{gt_g}{This argument only applies to \code{type = "attgt"}. A numeric
 vector specifying a subset of treatment groups to plot. The default \code{NULL}
 will plot all treatment groups.}
 
-\item{gt_ci_order}{This argument only applies to \code{mod_type = "attgt"}. A
+\item{gt_ci_order}{This argument only applies to \code{type = "attgt"}. A
 character vector specifying a custom order for the confidence intervals
 to be entered into the plot. The vector must contain the names of all
 of the confidence intervals you are plotting and nothing else. The names
@@ -127,19 +133,19 @@ treatment groups, and the order must be the same across all treatment
 groups. Therefore the default makes an assumption about the order, and
 that order can only be changed with this argument.}
 
-\item{gt_ncol}{This argument only applies to \code{mod_type = "attgt"}. An
+\item{gt_ncol}{This argument only applies to \code{type = "attgt"}. An
 integer specifying the number of columns in the plot grid, i.e. the final
 output that is a grid of the individual ATT(g,t) plots. If the default
 \code{NULL} is supplied, the function will auto-assign a number of cols as
 follows: \code{1} if there are 1 or 2 treatment groups; \code{2} if there are 3 or 4
 treatment groups; and \code{3} otherwise.}
 
-\item{gt_y_axes_same}{This argument only applies to \code{mod_type = "attgt"}. A
+\item{gt_y_axes_same}{This argument only applies to \code{type = "attgt"}. A
 boolean specifying whether y-axes should be consistent across all
 individual ATT(g,t) plots. The default is \code{TRUE}.}
 }
 \value{
-A ggplot2 plot. If \code{mod_type = "attgt"}, it returns a grid of
+A ggplot2 plot. If \code{type = "attgt"}, it returns a grid of
 individual ATT(g,t) ggplots created by the patchwork package.
 }
 \description{
@@ -173,12 +179,12 @@ edid_res <- edid(
 )
 
 # Plot individual ATT(g,t)'s with the 95\% bootstrapped CI
-plot_edid(edid_res, mod_type = "attgt")
+plot_edid(edid_res, type = "attgt")
 
 # Plot a subset of individual ATT(g,t)'s with all CIs
 plot_edid(
   edid_res,
-  mod_type = "attgt",
+  type = "attgt",
   ci = "all",
   gt_g = c(5, 6, 7)
 )
@@ -187,7 +193,7 @@ plot_edid(
 # and the viridis color scheme
 plot_edid(
   edid_res,
-  mod_type = "es",
+  type = "es",
   ci = "boot",
   colors = "viridis"
 )
@@ -196,7 +202,7 @@ plot_edid(
 # a custom color palette, and smaller plot text
 plot_edid(
   edid_res,
-  mod_type = "cal",
+  type = "cal",
   ci = "95",
   colors = c("deeppink2", "deepskyblue2"),
   text_size_base = 10
@@ -213,7 +219,7 @@ edid_res_anticip <- edid(
   anticip = 1
 )
 
-plot_edid(edid_res_anticip, mod_type = "es")
+plot_edid(edid_res_anticip, type = "es")
 
 # Plot an event study with a results data frame
 # containing only event study results

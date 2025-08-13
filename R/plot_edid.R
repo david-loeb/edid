@@ -71,10 +71,12 @@
 #'   text sizes of those elements will be updated to match the supplied base
 #'   text size.
 #' @param text_size_title A number specifying the plot title size. `NULL`
-#'   defaults to the same size as `text_size_base`. For `type = "aggt"`,
-#'   this parameter corresponds to the size of the individual ATT(g,t) plot
-#'   titles rather than the overall plot grid title. The plot grid title will
-#'   always be set to `text_size_base + 1` (the ggplot2 default).
+#'   defaults to`text_size_base + 1`, the ggplot2 default, for `type = "es"`
+#'   and `type = "cal"`. For `type = "aggt"`, this parameter corresponds to the
+#'   size of the individual ATT(g,t) plot titles rather than the overall plot
+#'   grid title. In this case, `NULL` defaults to the same size as
+#'   `text_size_base`. The plot grid title will always be set to
+#'   `text_size_base + 1` (the ggplot2 default).
 #' @param text_size_legend_title A number specifying the ggplot2 legend title
 #'   size. `NULL` defaults to the same size as `text_size_base`.
 #' @param text_size_legend_text A number specifying the ggplot2 legend text size.
@@ -219,7 +221,11 @@ plot_edid <- function(
   if (is.null(point_size)) point_size <- 1.5
   if (is.null(error_bar_vline_width)) error_bar_vline_width <- 0.5
   if (is.null(text_size_base)) text_size_base <- 11
-  if (is.null(text_size_title)) text_size_title <- text_size_base
+  if (is.null(text_size_title) & mod_type == 'attgt') {
+    text_size_title <- text_size_base
+  } else if (is.null(text_size_title)) {
+    text_size_title <- text_size_base + 1
+  }
   if (is.null(text_size_legend_title)) text_size_legend_title <- text_size_base
   if (is.null(text_size_legend_text)) text_size_legend_text <- text_size_base - 2
   if (is.null(text_font)) text_font <- 'sans'
