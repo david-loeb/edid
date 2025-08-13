@@ -21,7 +21,7 @@
 #'
 #' @param res_dat A results data frame returned by [edid()],
 #'   [get_edid_results_attgt()], or [get_edid_results_agg()]
-#' @param mod_type Character string specifying the type of model you want to
+#' @param type Character string specifying the type of model you want to
 #'   plot. Options are `"attgt"`, `"es"`, and `"cal"`. If your results data
 #'   frame contains only one model type, you can leave the default `NULL`
 #'   option and the function will automatically plot that model type.
@@ -71,7 +71,7 @@
 #'   text sizes of those elements will be updated to match the supplied base
 #'   text size.
 #' @param text_size_title A number specifying the plot title size. `NULL`
-#'   defaults to the same size as `text_size_base`. For `mod_type = "aggt"`,
+#'   defaults to the same size as `text_size_base`. For `type = "aggt"`,
 #'   this parameter corresponds to the size of the individual ATT(g,t) plot
 #'   titles rather than the overall plot grid title. The plot grid title will
 #'   always be set to `text_size_base + 1` (the ggplot2 default).
@@ -85,10 +85,10 @@
 #'   `NULL` defaults to `sans`, the ggplot2 default.
 #' @param anticip_color A string specifying the color of anticipation periods.
 #'   `NULL` defaults to `"black"`.
-#' @param gt_g This argument only applies to `mod_type = "attgt"`. A numeric
+#' @param gt_g This argument only applies to `type = "attgt"`. A numeric
 #'   vector specifying a subset of treatment groups to plot. The default `NULL`
 #'   will plot all treatment groups.
-#' @param gt_ci_order This argument only applies to `mod_type = "attgt"`. A
+#' @param gt_ci_order This argument only applies to `type = "attgt"`. A
 #'   character vector specifying a custom order for the confidence intervals
 #'   to be entered into the plot. The vector must contain the names of all
 #'   of the confidence intervals you are plotting and nothing else. The names
@@ -100,17 +100,17 @@
 #'   treatment groups, and the order must be the same across all treatment
 #'   groups. Therefore the default makes an assumption about the order, and
 #'   that order can only be changed with this argument.
-#' @param gt_ncol This argument only applies to `mod_type = "attgt"`. An
+#' @param gt_ncol This argument only applies to `type = "attgt"`. An
 #'   integer specifying the number of columns in the plot grid, i.e. the final
 #'   output that is a grid of the individual ATT(g,t) plots. If the default
 #'   `NULL` is supplied, the function will auto-assign a number of cols as
 #'   follows: `1` if there are 1 or 2 treatment groups; `2` if there are 3 or 4
 #'   treatment groups; and `3` otherwise.
-#' @param gt_y_axes_same This argument only applies to `mod_type = "attgt"`. A
+#' @param gt_y_axes_same This argument only applies to `type = "attgt"`. A
 #'   boolean specifying whether y-axes should be consistent across all
 #'   individual ATT(g,t) plots. The default is `TRUE`.
 #'
-#' @returns A ggplot2 plot. If `mod_type = "attgt"`, it returns a grid of
+#' @returns A ggplot2 plot. If `type = "attgt"`, it returns a grid of
 #'   individual ATT(g,t) ggplots created by the patchwork package.
 #'
 #' @importFrom patchwork plot_layout
@@ -127,12 +127,12 @@
 #' )
 #'
 #' # Plot individual ATT(g,t)'s with the 95% bootstrapped CI
-#' plot_edid(edid_res, mod_type = "attgt")
+#' plot_edid(edid_res, type = "attgt")
 #'
 #' # Plot a subset of individual ATT(g,t)'s with all CIs
 #' plot_edid(
 #'   edid_res,
-#'   mod_type = "attgt",
+#'   type = "attgt",
 #'   ci = "all",
 #'   gt_g = c(5, 6, 7)
 #' )
@@ -141,7 +141,7 @@
 #' # and the viridis color scheme
 #' plot_edid(
 #'   edid_res,
-#'   mod_type = "es",
+#'   type = "es",
 #'   ci = "boot",
 #'   colors = "viridis"
 #' )
@@ -150,7 +150,7 @@
 #' # a custom color palette, and smaller plot text
 #' plot_edid(
 #'   edid_res,
-#'   mod_type = "cal",
+#'   type = "cal",
 #'   ci = "95",
 #'   colors = c("deeppink2", "deepskyblue2"),
 #'   text_size_base = 10
@@ -167,7 +167,7 @@
 #'   anticip = 1
 #' )
 #'
-#' plot_edid(edid_res_anticip, mod_type = "es")
+#' plot_edid(edid_res_anticip, type = "es")
 #'
 #' # Plot an event study with a results data frame
 #' # containing only event study results
@@ -186,7 +186,7 @@
 #' plot_edid(edid_res_es)
 plot_edid <- function(
     res_dat,
-    mod_type = NULL,
+    type = NULL,
     ci = '95_boot',
     colors = 'turbo',
     title = NULL,
@@ -208,10 +208,12 @@ plot_edid <- function(
     gt_ncol = NULL,
     gt_y_axes_same = TRUE
 ) {
-  if (is.null(mod_type) & length(unique(res_dat$type)) > 1) {
+  if (is.null(type) & length(unique(res_dat$type)) > 1) {
     stop('must specify the type of model you want to plot')
-  } else if (is.null(mod_type)) {
+  } else if (is.null(type)) {
     mod_type <- unique(res_dat$type)
+  } else {
+    mod_type <- type
   }
 
   if (is.null(point_size)) point_size <- 1.5
