@@ -15,6 +15,7 @@ plot_edid(
   point_size = NULL,
   error_bar_vline_width = NULL,
   error_bar_hline_width = 0.3,
+  xlim_padding = 0.2,
   text_size_base = NULL,
   text_size_title = NULL,
   text_size_legend_title = NULL,
@@ -77,6 +78,13 @@ error bar lines. \code{NULL} defaults to \code{0.5}, the ggplot2 default.}
 end points of the error bars. If error bars are too wide, the first and/or
 last time period's bars may extend beyond the x-axis limits and get
 clipped, so you may need to adjust this setting accordingly.}
+
+\item{xlim_padding}{A number specifying the amount by which to extend the
+x-axis limits in order to provide "padding" for the error bars to prevent
+clipping. If your error bars are getting clipped (i.e., the first or last
+time period's horizontal bar ends do not appear), you will need to
+increase this value. You can also decrease the value if you have extra
+unnecessary space at the ends of the x-axis.}
 
 \item{text_size_base}{A number specifying the ggplot2 base text size.
 \code{NULL} defaults to \code{11}, the ggplot2 default. If the value is supplied

@@ -59,6 +59,12 @@
 #'   end points of the error bars. If error bars are too wide, the first and/or
 #'   last time period's bars may extend beyond the x-axis limits and get
 #'   clipped, so you may need to adjust this setting accordingly.
+#' @param xlim_padding A number specifying the amount by which to extend the
+#'   x-axis limits in order to provide "padding" for the error bars to prevent
+#'   clipping. If your error bars are getting clipped (i.e., the first or last
+#'   time period's horizontal bar ends do not appear), you will need to
+#'   increase this value. You can also decrease the value if you have extra
+#'   unnecessary space at the ends of the x-axis.
 #' @param text_size_base A number specifying the ggplot2 base text size.
 #'   `NULL` defaults to `11`, the ggplot2 default. If the value is supplied
 #'   and the values to the other `text_size_*` arguments are left `NULL`, the
@@ -187,6 +193,7 @@ plot_edid <- function(
     point_size = NULL,
     error_bar_vline_width = NULL,
     error_bar_hline_width = 0.3,
+    xlim_padding = 0.2,
     text_size_base = NULL,
     text_size_title = NULL,
     text_size_legend_title = NULL,
@@ -248,14 +255,15 @@ plot_edid <- function(
     } else {
       ylims <- NULL
     }
+    xlims <- c(min(dat$t) - xlim_padding, max(dat$t) + xlim_padding)
 
     plts <- purrr::map(gt_g, \(g) {
       plot_edid_one(
         dat, 'attgt', ci, colors, title, ylab, xlab,
-        point_size, error_bar_vline_width, error_bar_hline_width,
+        point_size, error_bar_vline_width, error_bar_hline_width, xlim_padding,
         text_size_base, text_size_title, text_size_legend_title,
         text_size_legend_text, text_font, anticip_color,
-        g, gt_ci_order, ylims
+        g, gt_ci_order, ylims, xlims
       )
     })
     if (gt_y_axes_same) {
@@ -282,7 +290,7 @@ plot_edid <- function(
   } else {  # If event study or cal, just run underlying individual plot func
     plot_edid_one(
       res_dat, mod_type, ci, colors, title, ylab, xlab,
-      point_size, error_bar_vline_width, error_bar_hline_width,
+      point_size, error_bar_vline_width, error_bar_hline_width, xlim_padding,
       text_size_base, text_size_title, text_size_legend_title,
       text_size_legend_text, text_font, anticip_color
     )
@@ -364,6 +372,9 @@ plot_edid <- function(
 #' @param ylims Numeric vector of length 2 specifying the y-axis limits. Used
 #'   only by `mod_type = "attgt"` and when `get_y_axes_same = TRUE` in the
 #'   `plot_edid()` function.
+#' @param xlims Numeric vector of length 2 specifying the x-axis limits. Used
+#'   only by `mod_type = "attgt"` to force all treatment group plots to have
+#'   the same x-axes.
 #'
 #' @returns A single ggplot2 plot with EDiD results.
 #'
@@ -379,6 +390,7 @@ plot_edid_one <- function(
     point_size = NULL,
     error_bar_vline_width = NULL,
     error_bar_hline_width = NULL,
+    xlim_padding = NULL,
     text_size_base = NULL,
     text_size_title = NULL,
     text_size_legend_title = NULL,
@@ -387,14 +399,16 @@ plot_edid_one <- function(
     anticip_color = NULL,
     g_cur = NULL,
     ci_order = NULL,
-    ylims = NULL
+    ylims = NULL,
+    xlims = NULL
 ) {
   dat <- dplyr::filter(res_dat, type == mod_type)
   if (mod_type == 'es') {
     if (is.null(xlab)) xlab <- 'Time Since Event'
-
+    xlims <- c(min(dat$e) - xlim_padding, max(dat$e) + xlim_padding)
   } else if (mod_type == 'cal') {
     if (is.null(xlab)) xlab <- 'Time'
+    xlims <- c(min(dat$t) - xlim_padding, max(dat$t) + xlim_padding)
   } else {
     dat <- dplyr::filter(dat, g == g_cur)
     title <- g_cur
@@ -402,7 +416,7 @@ plot_edid_one <- function(
   }
 
   ebars <- ci # for cases where a single CI is requested
-  if (mod_type != 'attgt') {
+  if (mod_type != 'attgt' & ci %in% c('all', 'boot', 'analytic', '90', '95')) {
     pct_boot_larger <- dat |> # Order SEs by size for plotting & color setting
       dplyr::filter(is.na(e) | e >= 0) |>
       dplyr::mutate(boot_v_analytic = se_boot - se_analytic) |>
@@ -618,13 +632,12 @@ plot_edid_one <- function(
       labels = legend_labs,
       values = color_vec
     ) +
-    ggplot2::scale_x_continuous(
-      breaks = scales::breaks_extended(Q = c(1, 5, 3, 4, 2))
-    ) +
     ggplot2::ylab(ylab) +
-    ggplot2::xlab(xlab)
-  if (!is.null(title) | mod_type == 'attgt') plt <- plt + ggplot2::ggtitle(title)
+    ggplot2::xlab(xlab) +
+    ggplot2::xlim(xlims)
+
   if (!is.null(ylims)) plt <- plt + ggplot2::ylim(ylims)  # consistent ATTgt axes
+  if (!is.null(title) | mod_type == 'attgt') plt <- plt + ggplot2::ggtitle(title)
 
   if (mod_type != 'cal') {  # Add anticipation times in black
     dat_anticip <- dplyr::filter(dat, e < 0)
