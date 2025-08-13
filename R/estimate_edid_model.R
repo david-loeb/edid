@@ -102,11 +102,8 @@ estimate_edid_model <- function(dat,
                                 cluster = NULL,
                                 biters = 1000,
                                 seed = 6) {
-  if (is.null(cluster) & 'clust' %in% names(dat)) {
-    cluster <- TRUE
-  } else {
-    cluster <- FALSE
-  }
+  if (is.null(cluster) & 'clust' %in% names(dat)) cluster <- TRUE
+  if (is.null(cluster)) cluster <- FALSE
   if (cluster & !('clust' %in% names(dat))) stop(
     'data must include cluster ID col named "clust"; specify in prep_edid_data()'
   )
