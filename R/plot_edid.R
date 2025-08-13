@@ -79,6 +79,8 @@
 #'   size. `NULL` defaults to the same size as `text_size_base`.
 #' @param text_size_legend_text A number specifying the ggplot2 legend text size.
 #'   `NULL` defaults to two sizes smaller than `text_size_base`.
+#' @param show_legend A boolean specifying whether to display the confidence
+#'   interval legend. Default is `TRUE`.
 #' @param text_font A string specifying the name of the font family to use.
 #'   `NULL` defaults to `sans`, the ggplot2 default.
 #' @param anticip_color A string specifying the color of anticipation periods.
@@ -198,6 +200,7 @@ plot_edid <- function(
     text_size_title = NULL,
     text_size_legend_title = NULL,
     text_size_legend_text = NULL,
+    show_legend = TRUE,
     text_font = NULL,
     anticip_color = NULL,
     gt_g = NULL,
@@ -262,7 +265,7 @@ plot_edid <- function(
         dat, 'attgt', ci, colors, title, ylab, xlab,
         point_size, error_bar_vline_width, error_bar_hline_width, xlim_padding,
         text_size_base, text_size_title, text_size_legend_title,
-        text_size_legend_text, text_font, anticip_color,
+        text_size_legend_text, show_legend, text_font, anticip_color,
         g, gt_ci_order, ylims, xlims
       )
     })
@@ -292,7 +295,7 @@ plot_edid <- function(
       res_dat, mod_type, ci, colors, title, ylab, xlab,
       point_size, error_bar_vline_width, error_bar_hline_width, xlim_padding,
       text_size_base, text_size_title, text_size_legend_title,
-      text_size_legend_text, text_font, anticip_color
+      text_size_legend_text, show_legend, text_font, anticip_color
     )
   }
 }
@@ -356,6 +359,8 @@ plot_edid <- function(
 #'   size. `NULL` defaults to the same size as `text_size_base`.
 #' @param text_size_legend_text A number specifying the ggplot2 legend text size.
 #'   `NULL` defaults to two sizes smaller than `text_size_base`.
+#' @param show_legend A boolean specifying whether to display the confidence
+#'   interval legend. Default is `TRUE`.
 #' @param text_font A string specifying the name of the font family to use.
 #'   `NULL` defaults to `sans`, the ggplot2 default.
 #' @param anticip_color A string specifying the color of anticipation periods.
@@ -395,6 +400,7 @@ plot_edid_one <- function(
     text_size_title = NULL,
     text_size_legend_title = NULL,
     text_size_legend_text = NULL,
+    show_legend = NULL,
     text_font = NULL,
     anticip_color = NULL,
     g_cur = NULL,
@@ -620,13 +626,6 @@ plot_edid_one <- function(
     ggplot2::geom_point(color = colors[n_ebars], size = point_size) +
     ggplot2::geom_hline(yintercept = 0, lty = 'dashed') +
     ggplot2::theme_minimal(base_size = text_size_base) +
-    ggplot2::theme(
-      panel.grid = ggplot2::element_blank(),
-      text = ggplot2::element_text(family = text_font),
-      plot.title = ggplot2::element_text(size = text_size_title, hjust = .5),
-      legend.text = ggplot2::element_text(size = text_size_legend_text),
-      legend.title = ggplot2::element_text(size = text_size_legend_title)
-    ) +
     ggplot2::scale_color_manual(
       name = 'Simult.\nConf. Bands',
       labels = legend_labs,
@@ -635,7 +634,24 @@ plot_edid_one <- function(
     ggplot2::ylab(ylab) +
     ggplot2::xlab(xlab) +
     ggplot2::xlim(xlims)
-
+  if (!show_legend) {
+    plt <- plt +
+      ggplot2::theme(
+        panel.grid = ggplot2::element_blank(),
+        text = ggplot2::element_text(family = text_font),
+        plot.title = ggplot2::element_text(size = text_size_title, hjust = .5),
+        legend.position = 'none'
+      )
+  } else {
+    plt <- plt +
+      ggplot2::theme(
+        panel.grid = ggplot2::element_blank(),
+        text = ggplot2::element_text(family = text_font),
+        plot.title = ggplot2::element_text(size = text_size_title, hjust = .5),
+        legend.text = ggplot2::element_text(size = text_size_legend_text),
+        legend.title = ggplot2::element_text(size = text_size_legend_title)
+      )
+  }
   if (!is.null(ylims)) plt <- plt + ggplot2::ylim(ylims)  # consistent ATTgt axes
   if (!is.null(title) | mod_type == 'attgt') plt <- plt + ggplot2::ggtitle(title)
 
