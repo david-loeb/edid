@@ -63,7 +63,9 @@ The result will be a data frame with the efficient $ATT(g,t)$, event
 study, and calendar time aggregation results. You can also request a
 more complete set of model components, including the individual
 $ATT(g,t)$ and weights used to compute the efficient $ATT(g,t)$ by
-setting `get_full_mod = TRUE` in the `edid()` function.
+setting `get_full_mod = TRUE` in the `edid()` function. Additional
+options can be specified in `edid()` such as anticipation periods; see
+the documentation for details.
 
 ## Plot results
 
