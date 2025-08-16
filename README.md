@@ -1,8 +1,8 @@
 
 # edid
 
-The edid package implements the efficient difference-in-differences and
-event study estimators developed by [Chen, Sant’Anna, and Xie
+The {edid} package implements the efficient difference-in-differences
+and event study estimators developed by [Chen, Sant’Anna, and Xie
 (2025)](https://arxiv.org/abs/2506.17729). I wrote the code for a
 personal research project, as I could not find a publicly available
 implementation, so I thought I’d share it. The functionality is quite
@@ -72,7 +72,7 @@ the documentation for details.
 The EDiD results can be plotted with the `plot_edid()` function. It uses
 {ggplot2} (and {patchwork} if plotting individual $ATT(g,t)$ ) under the
 hood. The following code demonstrates how to use `plot_edid()` and an
-example of how the plot looks. (Wouldn’t we all love to have results
+example of the resulting plot. (Wouldn’t we all love to have results
 like this?)
 
 ``` r
@@ -84,11 +84,12 @@ plot_edid(edid_results, type = "es")
 
 The plots can be customized in a number of ways, including the
 confidence intervals to plot, color scheme, titles, point and line
-sizes, text sizes, and font. You can also save the plot result and
-customize it further with your own {ggplot2} pipeline. The plot below
-shows the full set of $ATT(g,t)$ results and all confidence intervals
-with some appearance customizations. (I increase the confidence interval
-size in the example to provide a more demonstrative plot.)
+sizes, text sizes, font, and whether to display the legend. You can also
+save the plot result and customize it further with your own {ggplot2}
+pipeline. The plot below shows the full set of $ATT(g,t)$ results and
+all confidence intervals with some appearance customizations. (I
+increase the confidence interval size in the example to provide a more
+demonstrative plot.)
 
 ``` r
 # Increase the size of CIs
@@ -144,18 +145,18 @@ modeling process.
 
 ## Limitations
 
-edid’s biggest limitation is that it does not handle covariates. It also
-requires that all treatment groups use the same number of pre-treatment
-periods to estimate treatment effects, and it requires balanced panels.
-It is probably limited in other ways that aren’t coming to mind. I am
-definitely open to expanding the functionality so don’t hesitate to
-reach out with requests / issues / feedback of any kind.
+{edid}’s biggest limitation is that it does not handle covariates. It
+also requires that all treatment groups use the same number of
+pre-treatment periods to estimate treatment effects, and it requires
+balanced panels. It is probably limited in other ways that aren’t coming
+to mind. I am definitely open to expanding the functionality so don’t
+hesitate to reach out with requests / issues / feedback of any kind.
 
 ## Acknowledgements
 
 First I would like to thank the authors Drs. Xiaohong Chen, Pedro H. C.
 Sant’Anna, and Haitian Xie for their fantastic work developing this
-estimator. It has already proved to be useful in my own work. I highly
+estimator. It has already proved useful in my own work. I highly
 recommend reading [their paper](https://arxiv.org/abs/2506.17729). I
 also want to thank Dr. Brantly Callaway (and Dr. Pedro Sant’Anna again)
 for the multiplier bootstrap procedure developed in their renowned [2021
