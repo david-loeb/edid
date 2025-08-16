@@ -41,7 +41,7 @@ edid_results <- edid(
   treat_time_var = "treat_adopt_time",
   id_var = "id",
   time_var = "time",
-  num_t_pre = 3
+  num_t_pre = 3  # number of pre-treatment periods to use in ATT estimation
 )
 ```
 
@@ -61,7 +61,7 @@ like this?)
 
 ``` r
 # Event study plot
-plot_edid(edid_results, mod_type = "es")
+plot_edid(edid_results, type = "es")
 ```
 
 <img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
@@ -90,7 +90,7 @@ edid_res_largerCI <- edid_results |>
 
 plot_edid(
   edid_res_largerCI, 
-  mod_type = "attgt", 
+  type = "attgt", 
   ci = "all", 
   point_size = 2.5,
   error_bar_vline_width = 1,
