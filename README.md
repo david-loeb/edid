@@ -3,13 +3,13 @@
 
 The {edid} package implements the efficient difference-in-differences
 and event study estimators developed by [Chen, Sant’Anna, and Xie
-(2025)](https://arxiv.org/abs/2506.17729). I wrote the code for a
-personal research project, as I could not find a publicly available
-implementation, so I thought I’d share it. The functionality is quite
-limited; I describe the limitations below. I imagine a much more robust
-implementation will be released at some point. However, there does not
-currently appear to be anything else publicly available, so I hope this
-is better than nothing!
+(2025)](https://arxiv.org/abs/2506.17729). I initially developed the
+code for a personal research project, so the functionality is limited. I
+describe the limitations below. It also has several dependencies, though
+almost all are {tidyverse} packages. I imagine a more robust
+implementation will be released, but as far as I am aware, this is
+currently the only publicly available software for the class of
+estimators.
 
 ## Installation
 
