@@ -8,7 +8,8 @@ code for a personal project, so the functionality is limited. I describe
 the limitations below. It also has several dependencies, though almost
 all are {tidyverse} packages. I imagine a more robust implementation
 will be released, but as far as I am aware, this is currently the only
-publicly available software for this class of estimators.
+publicly available software for this class of estimators. I am happy to
+expand the functionality so please feel free to submit requests!
 
 ## Installation
 
