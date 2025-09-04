@@ -4,12 +4,11 @@
 The {edid} package implements the efficient difference-in-differences
 and event study estimators developed by [Chen, Sant’Anna, and Xie
 (2025)](https://arxiv.org/abs/2506.17729). I initially developed the
-code for a personal research project, so the functionality is limited. I
-describe the limitations below. It also has several dependencies, though
-almost all are {tidyverse} packages. I imagine a more robust
-implementation will be released, but as far as I am aware, this is
-currently the only publicly available software for the class of
-estimators.
+code for a personal project, so the functionality is limited. I describe
+the limitations below. It also has several dependencies, though almost
+all are {tidyverse} packages. I imagine a more robust implementation
+will be released, but as far as I am aware, this is currently the only
+publicly available software for this class of estimators.
 
 ## Installation
 
@@ -148,9 +147,9 @@ modeling process.
 {edid}’s biggest limitation is that it does not handle covariates. It
 also requires that all treatment groups use the same number of
 pre-treatment periods to estimate treatment effects, and it requires
-balanced panels. It is probably limited in other ways that aren’t coming
-to mind. I am definitely open to expanding the functionality so don’t
-hesitate to reach out with requests / issues / feedback of any kind.
+balanced panels. I am definitely open to expanding the functionality so
+don’t hesitate to reach out with requests / issues / feedback of any
+kind.
 
 ## Acknowledgements
 
