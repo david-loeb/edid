@@ -18,7 +18,7 @@ The {edid} package implements the efficient difference-in-differences and event 
 
 ## Installation
 
-Install the package from this GitHub page by running either the code below in R.
+Install the package from this GitHub page by running the code below in R.
 
 ``` r
 # install.packages("pak")

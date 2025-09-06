@@ -13,8 +13,8 @@ expand the functionality so please feel free to submit requests!
 
 ## Installation
 
-Install the package from this GitHub page by running either the code
-below in R.
+Install the package from this GitHub page by running the code below in
+R.
 
 ``` r
 # install.packages("pak")
