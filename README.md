@@ -13,15 +13,12 @@ expand the functionality so please feel free to submit requests!
 
 ## Installation
 
-Install the package from this GitHub page by running either the {pak} or
-{devtools} code below in R.
+Install the package from this GitHub page by running either the code
+below in R.
 
 ``` r
 # install.packages("pak")
 pak::pak("david-loeb/edid")
-
-# install.packages("devtools")
-devtools::install_github("david-loeb/edid")
 ```
 
 ## Overview

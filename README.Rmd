@@ -18,14 +18,11 @@ The {edid} package implements the efficient difference-in-differences and event 
 
 ## Installation
 
-Install the package from this GitHub page by running either the {pak} or {devtools} code below in R.
+Install the package from this GitHub page by running either the code below in R.
 
 ``` r
 # install.packages("pak")
 pak::pak("david-loeb/edid")
-
-# install.packages("devtools")
-devtools::install_github("david-loeb/edid")
 ```
 
 ## Overview
