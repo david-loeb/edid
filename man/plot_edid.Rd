@@ -23,6 +23,7 @@ plot_edid(
   show_legend = TRUE,
   text_font = NULL,
   anticip_color = NULL,
+  x_breaks = NULL,
   gt_g = NULL,
   gt_ci_order = NULL,
   gt_ncol = NULL,
@@ -115,6 +116,9 @@ interval legend. Default is \code{TRUE}.}
 
 \item{anticip_color}{A string specifying the color of anticipation periods.
 \code{NULL} defaults to \code{"black"}.}
+
+\item{x_breaks}{A numeric vector specifying custom x-axis breaks. The
+default \code{NULL} will use the default ggplot2 algorithm.}
 
 \item{gt_g}{This argument only applies to \code{type = "attgt"}. A numeric
 vector specifying a subset of treatment groups to plot. The default \code{NULL}

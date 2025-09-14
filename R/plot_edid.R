@@ -87,6 +87,8 @@
 #'   `NULL` defaults to `sans`, the ggplot2 default.
 #' @param anticip_color A string specifying the color of anticipation periods.
 #'   `NULL` defaults to `"black"`.
+#' @param x_breaks A numeric vector specifying custom x-axis breaks. The
+#'   default `NULL` will use the default ggplot2 algorithm.
 #' @param gt_g This argument only applies to `type = "attgt"`. A numeric
 #'   vector specifying a subset of treatment groups to plot. The default `NULL`
 #'   will plot all treatment groups.
@@ -205,6 +207,7 @@ plot_edid <- function(
     show_legend = TRUE,
     text_font = NULL,
     anticip_color = NULL,
+    x_breaks = NULL,
     gt_g = NULL,
     gt_ci_order = NULL,
     gt_ncol = NULL,
@@ -273,7 +276,7 @@ plot_edid <- function(
         dat, 'attgt', ci, colors, title, ylab, xlab,
         point_size, error_bar_vline_width, error_bar_hline_width, xlim_padding,
         text_size_base, text_size_title, text_size_legend_title,
-        text_size_legend_text, show_legend, text_font, anticip_color,
+        text_size_legend_text, show_legend, text_font, anticip_color, x_breaks,
         g, gt_ci_order, ylims, xlims
       )
     })
@@ -303,7 +306,7 @@ plot_edid <- function(
       res_dat, mod_type, ci, colors, title, ylab, xlab,
       point_size, error_bar_vline_width, error_bar_hline_width, xlim_padding,
       text_size_base, text_size_title, text_size_legend_title,
-      text_size_legend_text, show_legend, text_font, anticip_color
+      text_size_legend_text, show_legend, text_font, anticip_color, x_breaks
     )
   }
 }
@@ -373,6 +376,8 @@ plot_edid <- function(
 #'   `NULL` defaults to `sans`, the ggplot2 default.
 #' @param anticip_color A string specifying the color of anticipation periods.
 #'   `NULL` defaults to `"black"`.
+#' @param x_breaks A numeric vector specifying custom x-axis breaks. The
+#'   default `NULL` will use the default ggplot2 algorithm.
 #' @param g_cur Integer identifying the treament group identifier for an
 #'   ATT(g,t) plot.
 #' @param ci_order A character vector specifying a custom order for the
@@ -411,6 +416,7 @@ plot_edid_one <- function(
     show_legend = NULL,
     text_font = NULL,
     anticip_color = NULL,
+    x_breaks = NULL,
     g_cur = NULL,
     ci_order = NULL,
     ylims = NULL,
@@ -640,8 +646,13 @@ plot_edid_one <- function(
       values = color_vec
     ) +
     ggplot2::ylab(ylab) +
-    ggplot2::xlab(xlab) +
-    ggplot2::xlim(xlims)
+    ggplot2::xlab(xlab) #+
+    #ggplot2::xlim(xlims)
+  if (!is.null(x_breaks)) {
+    plt <- plt + ggplot2::scale_x_continuous(breaks = x_breaks, limits = xlims)
+  } else {
+    plt <- plt + ggplot2::xlim(xlims)
+  }
   if (!show_legend) {
     plt <- plt +
       ggplot2::theme(
