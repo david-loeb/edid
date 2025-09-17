@@ -34,10 +34,10 @@ control group comparison (g', t_pre) set.
 \examples{
 edid_data <- prep_data(
   edid_ex_data,
-  y_var = "outcome",
-  id_var = "id",
-  treat_time_var = "treat_adopt_time",
-  time_var = "time",
+  y = "outcome",
+  id = "id",
+  treat_time = "treat_adopt_time",
+  time = "time",
   num_t_pre = 3
 )
 

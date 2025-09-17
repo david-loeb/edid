@@ -32,12 +32,12 @@ arguments:
 
 - Dataset
 - Names of four variables in the dataset
-  - `y_var`: The outcome variable
-  - `treat_time_var`: A variable that specifies the time period in which
+  - `y`: The outcome variable
+  - `treat_time`: A variable that specifies the time period in which
     each unit adopted the treatment; never treated units get a `0` on
     this variable
-  - `id_var`: A unique identifier for each unit
-  - `time_var`: The time variable
+  - `id`: A unique identifier for each unit
+  - `time`: The time variable
 - `num_t_pre`: The number of pre-treatment periods to use for ATT
   estimation
 
@@ -48,10 +48,10 @@ library(edid)
 
 edid_results <- edid(
   edid_ex_data,
-  y_var = "outcome",
-  treat_time_var = "treat_adopt_time",
-  id_var = "id",
-  time_var = "time",
+  y = "outcome",
+  treat_time = "treat_adopt_time",
+  id = "id",
+  time = "time",
   num_t_pre = 3
 )
 ```

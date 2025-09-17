@@ -175,10 +175,10 @@ will get the higher order assignment.
 \examples{
 edid_res <- edid(
   edid_ex_data,
-  y_var = "outcome",
-  id_var = "id",
-  treat_time_var = "treat_adopt_time",
-  time_var = "time",
+  y = "outcome",
+  id = "id",
+  treat_time = "treat_adopt_time",
+  time = "time",
   num_t_pre = 3
 )
 
@@ -215,10 +215,10 @@ plot_edid(
 # Plot an event study with an anticipation period
 edid_res_anticip <- edid(
   edid_ex_data,
-  y_var = "outcome",
-  id_var = "id",
-  treat_time_var = "treat_adopt_time",
-  time_var = "time",
+  y = "outcome",
+  id = "id",
+  treat_time = "treat_adopt_time",
+  time = "time",
   num_t_pre = 2,
   anticip = 1
 )
@@ -229,10 +229,10 @@ plot_edid(edid_res_anticip, type = "es")
 # containing only event study results
 edid_res_es <- edid(
   edid_ex_data,
-  y_var = "outcome",
-  id_var = "id",
-  treat_time_var = "treat_adopt_time",
-  time_var = "time",
+  y = "outcome",
+  id = "id",
+  treat_time = "treat_adopt_time",
+  time = "time",
   num_t_pre = 2,
   anticip = 1,
   get_attgt = FALSE,

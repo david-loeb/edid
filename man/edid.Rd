@@ -6,12 +6,12 @@
 \usage{
 edid(
   dat,
-  y_var,
-  treat_time_var,
-  id_var,
-  time_var,
+  y,
+  treat_time,
+  id,
+  time,
   num_t_pre,
-  cluster_var = NULL,
+  cluster = NULL,
   anticip = 0,
   get_attgt = TRUE,
   get_es = TRUE,
@@ -24,23 +24,23 @@ edid(
 \arguments{
 \item{dat}{A data frame with the data you want to model.}
 
-\item{y_var}{A character string with the name of the outcome variable name
+\item{y}{A character string with the name of the outcome variable name
 in the data frame.}
 
-\item{treat_time_var}{A string with the name of a numeric variable in the
+\item{treat_time}{A string with the name of a numeric variable in the
 data frame that indicates the first period of treatment. Never treated
 units should have a value of 0 on this variable.}
 
-\item{id_var}{A string with the unit-level ID variable name in the
+\item{id}{A string with the unit-level ID variable name in the
 data frame. The variable can be numeric or character.}
 
-\item{time_var}{A string with name of the numeric time variable in the
+\item{time}{A string with name of the numeric time variable in the
 data frame.}
 
 \item{num_t_pre}{An integer specifying the number of pre-treatment
 periods to use for computing treatment effects.}
 
-\item{cluster_var}{An optional string with the name of a variable in the
+\item{cluster}{An optional string with the name of a variable in the
 data frame to cluster standard errors on. \code{NULL} defaults to clustering at
 the unit level. The variable can be numeric or character.}
 
@@ -105,20 +105,20 @@ values for each unit. To obtain those, run \code{\link[=get_ytilde]{get_ytilde()
 # time aggregated results.
 edid_res <- edid(
   edid_ex_data,
-  y_var = "outcome",
-  treat_time_var = "treat_adopt_time",
-  id_var = "id",
-  time_var = "time",
+  y = "outcome",
+  treat_time = "treat_adopt_time",
+  id = "id",
+  time = "time",
   num_t_pre = 3
 )
 
 # Return the event study results only
 edid_res_all <- edid(
   edid_ex_data,
-  y_var = "outcome",
-  treat_time_var = "treat_adopt_time",
-  id_var = "id",
-  time_var = "time",
+  y = "outcome",
+  treat_time = "treat_adopt_time",
+  id = "id",
+  time = "time",
   num_t_pre = 3,
   get_attgt = FALSE,
   get_cal = FALSE
@@ -127,10 +127,10 @@ edid_res_all <- edid(
 # Return the ATT(g,t) data frame and the full model results
 edid_res_all <- edid(
   edid_ex_data,
-  y_var = "outcome",
-  treat_time_var = "treat_adopt_time",
-  id_var = "id",
-  time_var = "time",
+  y = "outcome",
+  treat_time = "treat_adopt_time",
+  id = "id",
+  time = "time",
   num_t_pre = 3,
   get_es = FALSE,
   get_cal = FALSE,
@@ -140,21 +140,21 @@ edid_res_all <- edid(
 # Get results with clustered standard errors
 edid_res_all <- edid(
   edid_ex_data,
-  y_var = "outcome",
-  treat_time_var = "treat_adopt_time",
-  id_var = "id",
-  time_var = "time",
+  y = "outcome",
+  treat_time = "treat_adopt_time",
+  id = "id",
+  time = "time",
   num_t_pre = 3,
-  cluster_var = "cluster"
+  cluster = "cluster"
 )
 
 # Specify an anticipation period
 edid_res_all <- edid(
   edid_ex_data,
-  y_var = "outcome",
-  treat_time_var = "treat_adopt_time",
-  id_var = "id",
-  time_var = "time",
+  y = "outcome",
+  treat_time = "treat_adopt_time",
+  id = "id",
+  time = "time",
   num_t_pre = 2,
   anticip = 1
 )
