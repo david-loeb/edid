@@ -5,7 +5,7 @@
 #' each combination of treatment group (g), post-treatment period (t) and
 #' control group comparison (g', t_pre) set.
 #'
-#' @param dat The data frame returned by [prep_edid_data()].
+#' @param dat The data frame returned by [prep_data()].
 #'
 #' @returns
 #' A list with one element per (g, t, g', t_pre). Each element contains a
@@ -25,7 +25,7 @@
 #' @export
 #'
 #' @examples
-#' edid_data <- prep_edid_data(
+#' edid_data <- prep_data(
 #'   edid_ex_data,
 #'   y_var = "outcome",
 #'   id_var = "id",

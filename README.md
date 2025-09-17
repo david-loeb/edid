@@ -90,7 +90,7 @@ demonstrative plot.)
 
 ``` r
 # Increase the size of CIs
-edid_res_largerCI <- edid_results |> 
+edid_res_larger_CI <- edid_results |> 
   dplyr::mutate(
     ci_up_95_boot = ci_up_95_boot + se_boot * 100,
     ci_up_90_boot = ci_up_90_boot + se_boot * 50,
@@ -103,7 +103,7 @@ edid_res_largerCI <- edid_results |>
   )
 
 plot_edid(
-  edid_res_largerCI, 
+  edid_res_larger_CI, 
   type = "attgt", 
   ci = "all", 
   point_size = 2.5,
@@ -124,18 +124,18 @@ below. See the package documentation for a detailed explanation of each
 function. The functions are run in the order listed to execute the
 modeling process.
 
-- `prep_edid_data()`: Takes a panel dataset and converts it to the
-  proper format for the modeling functions.
+- `prep_data()`: Takes a panel dataset and converts it to the proper
+  format for the modeling functions.
 - `get_ytilde()`: Returns the $\tilde{Y}_{g',t\_{pre}}^{att(g,t)}$
   values for each unit.
 - `get_influence_func()`: Returns the influence function values for each
   unit.
-- `estimate_edid_model()`: Estimates the efficient $ATT(g,t)$, standard
+- `estimate_model()`: Estimates the efficient $ATT(g,t)$, standard
   errors, and confidence intervals.
-- `get_edid_results_attgt()`: Extracts the efficient $ATT(g,t)$ and
-  related results into a data frame.
-- `get_edid_results_agg()`: Aggregates the results into event study
-  and/or calendar time effects and returns the results in a data frame.
+- `get_results_attgt()`: Extracts the efficient $ATT(g,t)$ and related
+  results into a data frame.
+- `get_results_agg()`: Aggregates the results into event study and/or
+  calendar time effects and returns the results in a data frame.
 - `edid()`: Runs all of the above functions and returns any or all of
   the results of the three previous functions.
 - `plot_edid()`: Plots the results with {ggplot2}.

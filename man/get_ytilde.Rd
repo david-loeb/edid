@@ -7,7 +7,7 @@
 get_ytilde(dat)
 }
 \arguments{
-\item{dat}{The data frame returned by \code{\link[=prep_edid_data]{prep_edid_data()}}.}
+\item{dat}{The data frame returned by \code{\link[=prep_data]{prep_data()}}.}
 }
 \value{
 A list with one element per (g, t, g', t_pre). Each element contains a
@@ -32,7 +32,7 @@ each combination of treatment group (g), post-treatment period (t) and
 control group comparison (g', t_pre) set.
 }
 \examples{
-edid_data <- prep_edid_data(
+edid_data <- prep_data(
   edid_ex_data,
   y_var = "outcome",
   id_var = "id",

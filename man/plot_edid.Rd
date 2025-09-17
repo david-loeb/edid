@@ -32,7 +32,7 @@ plot_edid(
 }
 \arguments{
 \item{res_dat}{A results data frame returned by \code{\link[=edid]{edid()}},
-\code{\link[=get_edid_results_attgt]{get_edid_results_attgt()}}, or \code{\link[=get_edid_results_agg]{get_edid_results_agg()}}}
+\code{\link[=get_results_attgt]{get_results_attgt()}}, or \code{\link[=get_results_agg]{get_results_agg()}}}
 
 \item{type}{Character string specifying the type of model you want to
 plot. Options are \code{"attgt"}, \code{"es"}, and \code{"cal"}. If your results data

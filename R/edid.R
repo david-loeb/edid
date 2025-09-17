@@ -3,14 +3,14 @@
 #' This runs the entire efficient DiD process from the data setup to the
 #' extraction of final results. It runs each individual package function under
 #' the hood and returns the data frames produced by the
-#' [get_edid_results_attgt()] and [get_edid_results_agg()] functions, the full
-#' set of model elements produced by [estimate_edid_model()], or both.
+#' [get_results_attgt()] and [get_results_agg()] functions, the full
+#' set of model elements produced by [estimate_model()], or both.
 #'
 #' @details
 #' Note that the list of model elements returned by setting
 #' `get_full_mod = TRUE` does not include the Ytilde or influence function
 #' values for each unit. To obtain those, run [get_ytilde()] or
-#' [get_influence_func()] on a data frame prepared with [prep_edid_data()].
+#' [get_influence_func()] on a data frame prepared with [prep_data()].
 #'
 #' @param dat A data frame with the data you want to model.
 #' @param y_var A character string with the name of the outcome variable name
@@ -56,12 +56,12 @@
 #' `get_cal` are set to `TRUE`. The data frame will have a number of rows equal
 #' to the total number of ATT estimates among the requested results sets. The
 #' data frame is the result of binding the rows of the data frames returned by
-#' the [get_edid_results_attgt()] and [get_edid_results_agg()] functions; see
+#' the [get_results_attgt()] and [get_results_agg()] functions; see
 #' their documentation for descriptions of the columns. One additional column,
 #' `type`, will be added as the first column of the data frame indicating the
 #' type of estimate (`attgt`, `es` or `cal`).
 #'
-#' The list of full model elements is the output of the [estimate_edid_model()]
+#' The list of full model elements is the output of the [estimate_model()]
 #' function; see that function's documentation for a description of the output.
 #'
 #' @export
@@ -141,24 +141,24 @@ edid <- function(dat,
   if (!any(get_attgt, get_es, get_cal, get_full_mod)) stop(
     'must specify at least one set of results to return'
   )
-  dat <- prep_edid_data(
+  dat <- prep_data(
     dat, y_var, treat_time_var, id_var, time_var, num_t_pre, cluster_var, anticip
   )
   ytilde <- get_ytilde(dat)
   inf_func <- get_influence_func(dat, ytilde)
   if (!is.null(cluster_var)) cluster <- TRUE else cluster <- FALSE
-  mod <- estimate_edid_model(dat, ytilde, inf_func, cluster, biters, seed)
-  res <- get_edid_results_attgt(dat, mod, anticip)
+  mod <- estimate_model(dat, ytilde, inf_func, cluster, biters, seed)
+  res <- get_results_attgt(dat, mod, anticip)
   out <- list()
   if (get_attgt) out[['attgt']] <- res |> dplyr::mutate(type = 'attgt')
   if (get_es) {
-    out[['es']] <- get_edid_results_agg(
+    out[['es']] <- get_results_agg(
       dat, mod, anticip, 'es', res, cluster, biters, seed
     ) |>
       dplyr::mutate(type = 'es')
   }
   if (get_cal) {
-    out[['cal']] <- get_edid_results_agg(
+    out[['cal']] <- get_results_agg(
       dat, mod, anticip, 'cal', res, cluster, biters, seed
     ) |>
       dplyr::mutate(type = 'cal')

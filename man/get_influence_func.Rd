@@ -7,7 +7,7 @@
 get_influence_func(dat, ytilde)
 }
 \arguments{
-\item{dat}{The data frame returned by \code{\link[=prep_edid_data]{prep_edid_data()}}.}
+\item{dat}{The data frame returned by \code{\link[=prep_data]{prep_data()}}.}
 
 \item{ytilde}{The list of Ytilde values returned by \code{\link[=get_ytilde]{get_ytilde()}}.}
 }
@@ -34,7 +34,7 @@ each combination of treatment group (g), post-treatment period (t) and
 control group comparison (g', t_pre) set.
 }
 \examples{
-edid_data <- prep_edid_data(
+edid_data <- prep_data(
   edid_ex_data,
   y_var = "outcome",
   id_var = "id",

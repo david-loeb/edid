@@ -20,7 +20,7 @@
 #' will get the higher order assignment.
 #'
 #' @param res_dat A results data frame returned by [edid()],
-#'   [get_edid_results_attgt()], or [get_edid_results_agg()]
+#'   [get_results_attgt()], or [get_results_agg()]
 #' @param type Character string specifying the type of model you want to
 #'   plot. Options are `"attgt"`, `"es"`, and `"cal"`. If your results data
 #'   frame contains only one model type, you can leave the default `NULL`
@@ -316,7 +316,7 @@ plot_edid <- function(
 #' The workhorse function that creates the ggplot2 plots for `plot_edid()`.
 #'
 #' @param res_dat A results data frame returned by `edid()`,
-#'   `get_edid_results_attgt()`, or `get_edid_results_agg()`
+#'   `get_results_attgt()`, or `get_results_agg()`
 #' @param mod_type Character string specifying the type of model you want to
 #'   plot. Options are `"attgt"`, `"es"`, and `"cal"`. If your results data
 #'   frame contains only one model type, you can leave the default `NULL`

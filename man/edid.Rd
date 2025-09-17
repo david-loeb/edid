@@ -79,26 +79,26 @@ The results data frame will be returned if any of \code{get_attgt}, \code{get_es
 \code{get_cal} are set to \code{TRUE}. The data frame will have a number of rows equal
 to the total number of ATT estimates among the requested results sets. The
 data frame is the result of binding the rows of the data frames returned by
-the \code{\link[=get_edid_results_attgt]{get_edid_results_attgt()}} and \code{\link[=get_edid_results_agg]{get_edid_results_agg()}} functions; see
+the \code{\link[=get_results_attgt]{get_results_attgt()}} and \code{\link[=get_results_agg]{get_results_agg()}} functions; see
 their documentation for descriptions of the columns. One additional column,
 \code{type}, will be added as the first column of the data frame indicating the
 type of estimate (\code{attgt}, \code{es} or \code{cal}).
 
-The list of full model elements is the output of the \code{\link[=estimate_edid_model]{estimate_edid_model()}}
+The list of full model elements is the output of the \code{\link[=estimate_model]{estimate_model()}}
 function; see that function's documentation for a description of the output.
 }
 \description{
 This runs the entire efficient DiD process from the data setup to the
 extraction of final results. It runs each individual package function under
 the hood and returns the data frames produced by the
-\code{\link[=get_edid_results_attgt]{get_edid_results_attgt()}} and \code{\link[=get_edid_results_agg]{get_edid_results_agg()}} functions, the full
-set of model elements produced by \code{\link[=estimate_edid_model]{estimate_edid_model()}}, or both.
+\code{\link[=get_results_attgt]{get_results_attgt()}} and \code{\link[=get_results_agg]{get_results_agg()}} functions, the full
+set of model elements produced by \code{\link[=estimate_model]{estimate_model()}}, or both.
 }
 \details{
 Note that the list of model elements returned by setting
 \code{get_full_mod = TRUE} does not include the Ytilde or influence function
 values for each unit. To obtain those, run \code{\link[=get_ytilde]{get_ytilde()}} or
-\code{\link[=get_influence_func]{get_influence_func()}} on a data frame prepared with \code{\link[=prep_edid_data]{prep_edid_data()}}.
+\code{\link[=get_influence_func]{get_influence_func()}} on a data frame prepared with \code{\link[=prep_data]{prep_data()}}.
 }
 \examples{
 # Return the efficient ATT(g,t)s, event study, and calendar
